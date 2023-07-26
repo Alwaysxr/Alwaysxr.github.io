@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.17.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="结对编程代码互评 本次代码评价基于 lyc 同学的中小学数学卷子自动生成程序（个人项目）进行测试、分析和评价。我和lyc同学一起参加过一些比赛，对彼此的代码风格和处理问题的逻辑都比较熟悉，希望这次能从他的代码中得到新的收获。 代码功能测试  基础功能分析测试  按照题目给出的用户和常规操作进行测试。  对应的卷子生成在程序所设置的绝对路径下，命名符合题目要求。  生成试卷进一步增加了难度标题，便于">
+<meta property="og:type" content="article">
+<meta property="og:title" content="结对编程代码互评">
+<meta property="og:url" content="http://example.com/2023/07/26/%E7%BB%93%E5%AF%B9%E7%BC%96%E7%A8%8B%E4%BB%A3%E7%A0%81%E4%BA%92%E8%AF%84/index.html">
+<meta property="og:site_name" content="ALWAYSXR BLOG">
+<meta property="og:description" content="结对编程代码互评 本次代码评价基于 lyc 同学的中小学数学卷子自动生成程序（个人项目）进行测试、分析和评价。我和lyc同学一起参加过一些比赛，对彼此的代码风格和处理问题的逻辑都比较熟悉，希望这次能从他的代码中得到新的收获。 代码功能测试  基础功能分析测试  按照题目给出的用户和常规操作进行测试。  对应的卷子生成在程序所设置的绝对路径下，命名符合题目要求。  生成试卷进一步增加了难度标题，便于">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s1.ax1x.com/2023/03/14/pplhPMV.png">
+<meta property="og:image" content="https://s1.ax1x.com/2023/03/14/pplhirT.png">
+<meta property="og:image" content="https://s1.ax1x.com/2023/03/14/pplhFqU.png">
+<meta property="og:image" content="https://s1.ax1x.com/2023/03/14/pplhAZF.png">
+<meta property="og:image" content="https://s1.ax1x.com/2023/03/14/pplhEa4.png">
+<meta property="article:published_time" content="2023-07-26T12:49:24.422Z">
+<meta property="article:modified_time" content="2023-07-26T12:50:50.735Z">
+<meta property="article:author" content="AlwaysXR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s1.ax1x.com/2023/03/14/pplhPMV.png">
+
+
+<link rel="canonical" href="http://example.com/2023/07/26/%E7%BB%93%E5%AF%B9%E7%BC%96%E7%A8%8B%E4%BB%A3%E7%A0%81%E4%BA%92%E8%AF%84/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/07/26/%E7%BB%93%E5%AF%B9%E7%BC%96%E7%A8%8B%E4%BB%A3%E7%A0%81%E4%BA%92%E8%AF%84/","path":"2023/07/26/结对编程代码互评/","title":"结对编程代码互评"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>结对编程代码互评 | ALWAYSXR BLOG</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="ALWAYSXR BLOG" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">ALWAYSXR BLOG</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">WELCOME</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">结对编程代码互评</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95"><span class="nav-number">1.0.1.</span> <span class="nav-text">代码功能测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">1.0.2.</span> <span class="nav-text">代码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#User"><span class="nav-number">1.0.2.0.1.</span> <span class="nav-text">User</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Paper"><span class="nav-number">1.0.2.0.2.</span> <span class="nav-text">Paper</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#PaperGenerationSystem"><span class="nav-number">1.0.2.0.3.</span> <span class="nav-text">PaperGenerationSystem</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%AF%84%E4%BB%B7"><span class="nav-number">1.0.3.</span> <span class="nav-text">代码评价</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">AlwaysXR</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/26/%E7%BB%93%E5%AF%B9%E7%BC%96%E7%A8%8B%E4%BB%A3%E7%A0%81%E4%BA%92%E8%AF%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="AlwaysXR">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="结对编程代码互评 | ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          结对编程代码互评
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-07-26 20:49:24 / 修改时间：20:50:50" itemprop="dateCreated datePublished" datetime="2023-07-26T20:49:24+08:00">2023-07-26</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1>结对编程代码互评</h1>
+<p>本次代码评价基于 lyc 同学的中小学数学卷子自动生成程序（个人项目）进行测试、分析和评价。我和lyc同学一起参加过一些比赛，对彼此的代码风格和处理问题的逻辑都比较熟悉，希望这次能从他的代码中得到新的收获。</p>
+<h3 id="代码功能测试">代码功能测试</h3>
+<ol>
+<li>基础功能分析测试</li>
+</ol>
+<p>按照题目给出的用户和常规操作进行测试。</p>
+<p><img src="https://s1.ax1x.com/2023/03/14/pplhPMV.png" alt="img"></p>
+<p>对应的卷子生成在程序所设置的<strong>绝对路径</strong>下，命名符合题目要求。</p>
+<p><img src="https://s1.ax1x.com/2023/03/14/pplhirT.png" alt="img"></p>
+<p>生成试卷进一步增加了难度标题，便于用户分辨，优化了用户体验。生成题目的格式符合规范，各个运算符号添加位置合理，符合题目要求。</p>
+<p><img src="https://s1.ax1x.com/2023/03/14/pplhFqU.png" alt="img"></p>
+<ol>
+<li>随机输入测试</li>
+</ol>
+<p>这部分测试不按照题目给出的格式进行，而是随机输入不符合要求的字符测试程序。可以看到，程序在遇到无法识别的字符串时会提示输入错误，并自动返回输入字符串前的状态，由此保障了程序的安全性和高可用性。</p>
+<p><img src="https://s1.ax1x.com/2023/03/14/pplhAZF.png" alt="img"></p>
+<p>综上，可以看出 lyc 同学代码实现的功能和效果还是非常好的。</p>
+<h3 id="代码分析">代码分析</h3>
+<p>这份代码有四个类：</p>
+<p><img src="https://s1.ax1x.com/2023/03/14/pplhEa4.png" alt="img"></p>
+<p>其中Paper和User是实体类，分别定义了试卷和用户的属性和方法，PaperGenerationSystem是试卷产生系统的工具类，Main是程序的入口。</p>
+<p>下面具体分析每个类的实现和作用</p>
+<h5 id="User">User</h5>
+<p>User类有三个属性：分别是类型，用户名和密码</p>
+<table>
+<thead>
+<tr>
+<th><strong>属性名</strong></th>
+<th><strong>类型</strong></th>
+<th><strong>含义</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>type</td>
+<td>String</td>
+<td>用户此时的生成试卷的类型</td>
+</tr>
+<tr>
+<td>username</td>
+<td>String</td>
+<td>用户名</td>
+</tr>
+<tr>
+<td>password</td>
+<td>String</td>
+<td>密码</td>
+</tr>
+</tbody>
+</table>
+<p>构造方法如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">User</span><span class="params">(String type, String username, String password)</span> &#123;</span><br><span class="line">  <span class="built_in">this</span>.type = type;</span><br><span class="line">  <span class="built_in">this</span>.username = username;</span><br><span class="line">  <span class="built_in">this</span>.password = password;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其他方法：</p>
+<table>
+<thead>
+<tr>
+<th><strong>方法名</strong></th>
+<th><strong>返回值</strong></th>
+<th><strong>作用</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>getType</td>
+<td>String</td>
+<td>获取用户类型</td>
+</tr>
+<tr>
+<td>setType</td>
+<td>void</td>
+<td>设置用户类型</td>
+</tr>
+<tr>
+<td>getUsername</td>
+<td>String</td>
+<td>获取用户名</td>
+</tr>
+<tr>
+<td>setUsername</td>
+<td>void</td>
+<td>设置用户名</td>
+</tr>
+<tr>
+<td>getPassword</td>
+<td>String</td>
+<td>获取用户密码</td>
+</tr>
+<tr>
+<td>setPassword</td>
+<td>void</td>
+<td>设置用户密码</td>
+</tr>
+</tbody>
+</table>
+<p>总体来说User类设计逻辑清晰，方法得体。</p>
+<h5 id="Paper">Paper</h5>
+<p>Paper类有三个属性：分别是三种难度的运算符号</p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th><strong>类型</strong></th>
+<th><strong>含义</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>priSign</td>
+<td>String[]</td>
+<td>小学试卷操作符号</td>
+</tr>
+<tr>
+<td>midSign</td>
+<td>String[]</td>
+<td>初中试卷操作符号</td>
+</tr>
+<tr>
+<td>highSign</td>
+<td>String[]</td>
+<td>高中试卷操作符号</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> String[] priSign = &#123;<span class="string">&quot;+&quot;</span>, <span class="string">&quot;-&quot;</span>, <span class="string">&quot;*&quot;</span>, <span class="string">&quot;/&quot;</span>&#125;; <span class="comment">// 小学试卷操作符号</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> String[] midSign = &#123;<span class="string">&quot;²&quot;</span>, <span class="string">&quot;√&quot;</span>&#125;; <span class="comment">// 初中试卷操作符号</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> String[] highSign = &#123;<span class="string">&quot;sin&quot;</span>, <span class="string">&quot;cos&quot;</span>, <span class="string">&quot;tan&quot;</span>&#125;; <span class="comment">// 高中试卷操作符号</span></span><br></pre></td></tr></table></figure>
+<p>Paper类只有一个方法，这也是这份代码做的不太好的地方：一个方法过长，即使注释写的比较清楚，也显得繁杂，可读性较低。</p>
+<table>
+<thead>
+<tr>
+<th><strong>方法名</strong></th>
+<th><strong>返回值</strong></th>
+<th><strong>作用</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>makeQuestion</td>
+<td>String</td>
+<td>生成数学题的方法</td>
+</tr>
+</tbody>
+</table>
+<p>生成算式的逻辑是按照算式元素从左到右的顺序，除了必须的操作数和加减乘除等于符号，根据试卷类型和随机数来决定是否插入每个符号元素。这种方式生成逻辑清晰，便于理解，但是生成过程繁杂，算法性能并不是很好。</p>
+<h5 id="PaperGenerationSystem">PaperGenerationSystem</h5>
+<p>PaperGenerationSystem类仅有一个属性，是用户信息的存储链表</p>
+<table>
+<thead>
+<tr>
+<th><strong>属性名</strong></th>
+<th><strong>类型</strong></th>
+<th><strong>含义</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>userMessage</td>
+<td>List</td>
+<td>存储用户信息的链表</td>
+</tr>
+</tbody>
+</table>
+<p>PaperGenerationSystem的方法如下：</p>
+<table>
+<thead>
+<tr>
+<th><strong>方法名</strong></th>
+<th>*<strong>返回值</strong></th>
+<th><strong>作用</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>userInit</td>
+<td>void</td>
+<td>初始化用户信息的链表信息</td>
+</tr>
+<tr>
+<td>generate</td>
+<td>void</td>
+<td>程序的主系统</td>
+</tr>
+<tr>
+<td>PaperGeneration</td>
+<td>void</td>
+<td>试卷生成写入函数</td>
+</tr>
+<tr>
+<td>check</td>
+<td>boolean</td>
+<td>查重函数</td>
+</tr>
+<tr>
+<td>isNumeric</td>
+<td>boolean</td>
+<td>判断是否为数字</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>userInit</li>
+</ul>
+<p>使用链表存储小规模的用户信息，避免了数据库的使用，简化了程序。但是在判断登录时，需要遍历链表来比对用户名和密码，效率较低，可以换成hashmap提高查找效率，同时避免用户重复，进而提升程序的工作效率。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">userInit</span><span class="params">()</span> &#123;</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;小学&quot;</span>, <span class="string">&quot;张三1&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;小学&quot;</span>, <span class="string">&quot;张三2&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;小学&quot;</span>, <span class="string">&quot;张三3&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;初中&quot;</span>, <span class="string">&quot;李四1&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;初中&quot;</span>, <span class="string">&quot;李四2&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;初中&quot;</span>, <span class="string">&quot;李四3&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;高中&quot;</span>, <span class="string">&quot;王五1&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;高中&quot;</span>, <span class="string">&quot;王五2&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;高中&quot;</span>, <span class="string">&quot;王五3&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>generate</li>
+</ul>
+<p>是程序的主系统，实现了 用户交互部分 的功能，由于代码过长，只展示部分代码。这个方法同样有代码过长的问题，可以进一步封装来提高代码的可读性。</p>
+<ul>
+<li>
+<ul>
+<li>用户登录</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(<span class="string">&quot;-----欢迎来到中小学数学卷子自动生成系统！-----&quot;</span>);</span><br><span class="line">System.out.println(<span class="string">&quot;## 请输入用户名和密码(两者之间用空格隔开)&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">  <span class="type">Scanner</span> <span class="variable">sc</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(System.in);</span><br><span class="line">  <span class="type">String</span> <span class="variable">str</span> <span class="operator">=</span> sc.nextLine();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!str.contains(<span class="string">&quot; &quot;</span>)) &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;## 输入的账号密码格式不对,请重新输入&quot;</span>);</span><br><span class="line">    <span class="keyword">continue</span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>
+<ul>
+<li>难度切换部分</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(</span><br><span class="line">        <span class="string">&quot;## 当前选择为&quot;</span></span><br><span class="line">            + userMessage.get(index).getType()</span><br><span class="line">            + <span class="string">&quot;出题,请输入生成题目数量(题目数量范围为10~30,输入-1将退出当前用户,重新登录),如需切换出题类型，请输入切换为xx，xx为小学、初中和高中三个选项中的一个&quot;</span>);</span><br><span class="line">    <span class="type">String</span> <span class="variable">command</span> <span class="operator">=</span> sc.nextLine();</span><br><span class="line">    <span class="keyword">if</span> (command.equals(<span class="string">&quot;&quot;</span>)) &#123;</span><br><span class="line">      System.out.println(<span class="string">&quot;请输入内容!&quot;</span>);</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (command.equals(<span class="string">&quot;切换为小学&quot;</span>)) &#123;</span><br><span class="line">      userMessage.get(index).setType(<span class="string">&quot;小学&quot;</span>);</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (command.equals(<span class="string">&quot;切换为初中&quot;</span>)) &#123;</span><br><span class="line">      userMessage.get(index).setType(<span class="string">&quot;初中&quot;</span>);</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (command.equals(<span class="string">&quot;切换为高中&quot;</span>)) &#123;</span><br><span class="line">      userMessage.get(index).setType(<span class="string">&quot;高中&quot;</span>);</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>
+<ul>
+<li>题目生成部分：根据输入是否有数字和数字的范围，来判断是否要生成题目</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (isNumeric(command)) &#123;</span><br><span class="line">  <span class="keyword">if</span> (Integer.valueOf(command) &lt;= <span class="number">30</span> &amp;&amp; Integer.valueOf(command) &gt;= <span class="number">10</span>) &#123;</span><br><span class="line">    PaperGeneration(</span><br><span class="line">      Integer.valueOf(command),</span><br><span class="line">      userMessage.get(index).getType(),</span><br><span class="line">      userMessage.get(index).getUsername());</span><br><span class="line">   System.out.println(<span class="string">&quot;## 试卷生成成功!请在对应包下查看试卷!&quot;</span>);</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">     System.out.println(<span class="string">&quot;## 不满足题目数量，请重新输入&quot;</span>);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>PaperGeneration</li>
+</ul>
+<p>此方法是 试卷生成写入函数，用于</p>
+<ol>
+<li>
+<ol>
+<li>新建用户对应的文件夹和txt文件</li>
+<li>将生成的题目经过查重，加序号处理后写入文件</li>
+</ol>
+</li>
+</ol>
+<p>在程序中，文件使用的是绝对路径，因此会在未经过用户同意的情况下，在用户的电脑的对应路径下产生相应的文件夹，可能会造成用户找不到文件的问题，降低用户的使用体验。</p>
+<p>由于代码过长，只展示部分代码。这个方法同样有代码过长的问题，可以进一步封装来提高代码的可读性。</p>
+<ul>
+<li>
+<ul>
+<li>获取系统时间</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Date</span> <span class="variable">time</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Date</span>();</span><br><span class="line"><span class="type">SimpleDateFormat</span> <span class="variable">df</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SimpleDateFormat</span>(<span class="string">&quot;yyyy-MM-dd-HH-mm-ss&quot;</span>);</span><br><span class="line"><span class="type">String</span> <span class="variable">title</span> <span class="operator">=</span> df.format(time);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>
+<ul>
+<li>生成文件，并将查重后的试题写入文件</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">    <span class="type">String</span> <span class="variable">dirPath</span> <span class="operator">=</span> <span class="string">&quot;D:\\IDEA code\\PaperSystem\\system\\src\\com\\papers\\&quot;</span> + username;</span><br><span class="line">    <span class="type">File</span> <span class="variable">file</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(dirPath);</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (!file.exists()) file.mkdirs();</span><br><span class="line">      <span class="type">String</span> <span class="variable">paperDir</span> <span class="operator">=</span> dirPath + <span class="string">&quot;\\&quot;</span> + title + <span class="string">&quot;.txt&quot;</span>;</span><br><span class="line">      <span class="comment">// 写入文件内容,即试题</span></span><br><span class="line">      <span class="type">File</span> <span class="variable">newPaper</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(paperDir);</span><br><span class="line">      writer = <span class="keyword">new</span> <span class="title class_">FileWriter</span>(newPaper);</span><br><span class="line">      <span class="comment">// 标明是哪种卷子</span></span><br><span class="line">      writer.write(type + <span class="string">&quot;期末考试试卷\r\n\r\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">      <span class="type">int</span> <span class="variable">quesIndex</span> <span class="operator">=</span> <span class="number">1</span>; <span class="comment">// 题目序号</span></span><br><span class="line"></span><br><span class="line">      <span class="comment">// 根据输入的数量开始出题并写入文件</span></span><br><span class="line">      <span class="keyword">while</span> (sum &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">content</span> <span class="operator">=</span> paper.makeQuestion(type);</span><br><span class="line">          <span class="comment">// 试题查重</span></span><br><span class="line">        <span class="keyword">if</span> (check(newPaper, content)) &#123;</span><br><span class="line">          <span class="keyword">if</span> (sum == <span class="number">1</span>) &#123;</span><br><span class="line">            writer.write(quesIndex + <span class="string">&quot;. &quot;</span> + content);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">          &#125;</span><br><span class="line">          writer.write(quesIndex + <span class="string">&quot;. &quot;</span> + content + <span class="string">&quot;\r\n&quot;</span> + <span class="string">&quot;\r\n&quot;</span>);</span><br><span class="line">          sum--;</span><br><span class="line">          quesIndex++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!check(newPaper, content)) &#123;</span><br><span class="line">          System.out.println(content);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">     <span class="comment">// 刷新并关闭FileWriter </span></span><br><span class="line">      writer.flush();</span><br><span class="line">      writer.close();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">      e.printStackTrace();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>check</li>
+</ul>
+<p>此方法负责对题目进行查重，主要思路是遍历用户文件夹下的txt文件，逐个对比题目是否重复。这部分有一个小缺陷</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 只有一张卷子不查重</span></span><br><span class="line"><span class="keyword">if</span> (files.length == <span class="number">1</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我认为在同一张卷子的生成过程中，题目仍需与上面已经生产的题目进行查重处理。</p>
+<ul>
+<li>isNumeric</li>
+</ul>
+<p>此方法的作用是判断输入的字符串是否是数字，如果是数字则可能可以进行题目生成处理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isNumeric</span><span class="params">(String str)</span> &#123;</span><br><span class="line">  <span class="type">Pattern</span> <span class="variable">pattern</span> <span class="operator">=</span> Pattern.compile(<span class="string">&quot;[0-9]*&quot;</span>);</span><br><span class="line">  <span class="type">Matcher</span> <span class="variable">isNum</span> <span class="operator">=</span> pattern.matcher(str);</span><br><span class="line">  <span class="keyword">if</span> (!isNum.matches()) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="代码评价">代码评价</h3>
+<ul>
+<li>
+<p>优点：</p>
+</li>
+<li>
+<ol>
+<li>这份代码的功能实现十分完备，各个判断和边界考虑的清晰周到。</li>
+<li>类的设计逻辑清晰，易于他人理解。</li>
+<li>程序的文字提示十分完善，便于用户操作。</li>
+<li>属性的安全性较好，在适当的地方采用了private和final关键字进行处理。</li>
+</ol>
+</li>
+<li>
+<p>缺点：</p>
+</li>
+<li>
+<ol>
+<li>方法的封装不够完善，程序整体的可读性偏差。</li>
+<li>存储用户信息用的是链表，查找效率较低，可以采用map或者数据库</li>
+<li>文件生成的路径是绝对路径，单从终端无法得知文件生成在哪里。</li>
+<li>算法相对较为简单，效率较低，期待可以进行优化。</li>
+</ol>
+</li>
+</ul>
+<p>总体上来说，lyc同学编写的程序还是很值得我去学习的，尤其是在用户体验方面的考虑十分周到，向yc大佬低头！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/07/26/%E5%9F%BA%E4%BA%8Ezookeeper%E4%B8%B4%E6%97%B6%E9%A1%BA%E5%BA%8F%E8%8A%82%E7%82%B9%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%AE%9E%E7%8E%B0/" rel="prev" title="基于ZooKeeper临时顺序节点的分布式锁实现">
+                  <i class="fa fa-angle-left"></i> 基于ZooKeeper临时顺序节点的分布式锁实现
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/07/26/%E6%B5%81%E5%BC%8F%E8%AE%A1%E7%AE%97%E4%B8%AD%E7%9A%84Window%E6%9C%BA%E5%88%B6/" rel="next" title="流式计算中的Window机制">
+                  流式计算中的Window机制 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">AlwaysXR</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

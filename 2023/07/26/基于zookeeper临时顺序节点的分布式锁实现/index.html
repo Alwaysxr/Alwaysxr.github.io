@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.17.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="基于ZooKeeper临时顺序节点的分布式锁实现 [TOC] 1. 分布式锁 分布式锁是一种在分布式系统中协调进程或线程之间对共享资源进行访问控制的机制。在分布式系统中，多个进程或线程同时访问同一个资源时，为了保证数据的一致性和正确性，需要进行同步访问，避免多个进程或线程同时修改同一个资源造成数据的不一致。分布式锁就是为了解决这个问题而产生的。 在Java多线程中，我们了解过锁，这种锁主要用来控制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于ZooKeeper临时顺序节点的分布式锁实现">
+<meta property="og:url" content="http://example.com/2023/07/26/%E5%9F%BA%E4%BA%8Ezookeeper%E4%B8%B4%E6%97%B6%E9%A1%BA%E5%BA%8F%E8%8A%82%E7%82%B9%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="ALWAYSXR BLOG">
+<meta property="og:description" content="基于ZooKeeper临时顺序节点的分布式锁实现 [TOC] 1. 分布式锁 分布式锁是一种在分布式系统中协调进程或线程之间对共享资源进行访问控制的机制。在分布式系统中，多个进程或线程同时访问同一个资源时，为了保证数据的一致性和正确性，需要进行同步访问，避免多个进程或线程同时修改同一个资源造成数据的不一致。分布式锁就是为了解决这个问题而产生的。 在Java多线程中，我们了解过锁，这种锁主要用来控制">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z4a.net/images/2023/04/26/imagee2a9933c387e196e.png">
+<meta property="og:image" content="https://z4a.net/images/2023/04/26/image344e20e496d3aafc.png">
+<meta property="og:image" content="https://z4a.net/images/2023/04/26/image.png">
+<meta property="article:published_time" content="2023-07-26T12:20:14.302Z">
+<meta property="article:modified_time" content="2023-07-26T12:48:37.142Z">
+<meta property="article:author" content="AlwaysXR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z4a.net/images/2023/04/26/imagee2a9933c387e196e.png">
+
+
+<link rel="canonical" href="http://example.com/2023/07/26/%E5%9F%BA%E4%BA%8Ezookeeper%E4%B8%B4%E6%97%B6%E9%A1%BA%E5%BA%8F%E8%8A%82%E7%82%B9%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%AE%9E%E7%8E%B0/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/07/26/%E5%9F%BA%E4%BA%8Ezookeeper%E4%B8%B4%E6%97%B6%E9%A1%BA%E5%BA%8F%E8%8A%82%E7%82%B9%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%AE%9E%E7%8E%B0/","path":"2023/07/26/基于zookeeper临时顺序节点的分布式锁实现/","title":"基于ZooKeeper临时顺序节点的分布式锁实现"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>基于ZooKeeper临时顺序节点的分布式锁实现 | ALWAYSXR BLOG</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="ALWAYSXR BLOG" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">ALWAYSXR BLOG</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">WELCOME</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">基于ZooKeeper临时顺序节点的分布式锁实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">1.0.1.</span> <span class="nav-text">1. 分布式锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-ZooKeeper-%E5%9C%A8Java%E4%B8%AD%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-number">1.0.2.</span> <span class="nav-text">2. ZooKeeper 在Java中的基本使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-ZooKeeper%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E6%80%9D%E8%B7%AF"><span class="nav-number">1.0.3.</span> <span class="nav-text">3. ZooKeeper实现分布式锁的思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%B8%A4%E7%A7%8D%E5%9F%BA%E4%BA%8EZooKeeper%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="nav-number">1.0.4.</span> <span class="nav-text">4. 两种基于ZooKeeper分布式锁的优缺点</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">AlwaysXR</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/26/%E5%9F%BA%E4%BA%8Ezookeeper%E4%B8%B4%E6%97%B6%E9%A1%BA%E5%BA%8F%E8%8A%82%E7%82%B9%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%AE%9E%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="AlwaysXR">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="基于ZooKeeper临时顺序节点的分布式锁实现 | ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          基于ZooKeeper临时顺序节点的分布式锁实现
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-07-26 20:20:14 / 修改时间：20:48:37" itemprop="dateCreated datePublished" datetime="2023-07-26T20:20:14+08:00">2023-07-26</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1>基于ZooKeeper临时顺序节点的分布式锁实现</h1>
+<p>[TOC]</p>
+<h3 id="1-分布式锁">1. 分布式锁</h3>
+<p>分布式锁是一种在分布式系统中协调进程或线程之间对共享资源进行访问控制的机制。在分布式系统中，多个进程或线程同时访问同一个资源时，为了保证数据的一致性和正确性，需要进行同步访问，避免多个进程或线程同时修改同一个资源造成数据的不一致。分布式锁就是为了解决这个问题而产生的。</p>
+<p>在Java多线程中，我们了解过锁，这种锁主要用来控制一个JVM内的多个线程对本地共享资源的访问</p>
+<p><img src="https://z4a.net/images/2023/04/26/imagee2a9933c387e196e.png" alt="本地锁"></p>
+<p>但是在分布式系统中，可能会有运行在不同JVM上的线程来访问同一份资源，这时候本地的锁就无法解决问题了，分布式锁因而诞生。</p>
+<p><img src="https://z4a.net/images/2023/04/26/image344e20e496d3aafc.png" alt="分布式锁"></p>
+<p>一个最基本的分布式锁需要满足：</p>
+<ul>
+<li><strong>互斥</strong> ：任意一个时刻，锁只能被一个线程持有；</li>
+<li><strong>高可用</strong> ：锁服务是高可用的。并且，即使客户端的释放锁的代码逻辑出现问题，锁最终一定还是会被释放，不会影响其他线程对共享资源的访问。</li>
+<li><strong>可重入</strong>：一个节点获取了锁之后，还可以再次获取锁。</li>
+</ul>
+<h3 id="2-ZooKeeper-在Java中的基本使用">2. ZooKeeper 在Java中的基本使用</h3>
+<p>若想在Java中使用ZooKeeper，首先我们还是需要先启动ZooKeeper集群（可以有多个ZooKeeper服务端相连接，一般是奇数个）</p>
+<p><img src="https://z4a.net/images/2023/04/26/image.png" alt=""></p>
+<p>接下来我们就可以通过Java来控制ZooKeeper操作了</p>
+<p>在操作中有一系列参数，这里暂时不一一解释，咱们用到哪说到哪，感兴趣的小伙伴也可以自己去查一查</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//这里是自己导入了ZooKeeper的包</span></span><br><span class="line"><span class="keyword">import</span> org.apache.zookeeper.*;</span><br><span class="line"><span class="keyword">import</span> org.apache.zookeeper.data.Stat;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ZKOper</span> &#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">nodeAdds</span> <span class="operator">=</span> <span class="string">&quot;localhost:2181,localhost:2182,localhost:2183&quot;</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">//新建一个zookeeper连接，超时为 3s，以后对集群的操作，都在 zk 上完成</span></span><br><span class="line">		<span class="type">ZooKeeper</span> <span class="variable">zk</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ZooKeeper</span>(nodeAdds, <span class="number">3000</span>, watchedEvent -&gt; &#123;&#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//新增一个节点</span></span><br><span class="line">		<span class="type">String</span> <span class="variable">seq</span> <span class="operator">=</span> zk.create(<span class="string">&quot;/hnu&quot;</span>, <span class="string">&quot;loginIn&quot;</span>.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,</span><br><span class="line">				CreateMode.PERSISTENT);</span><br><span class="line">		System.out.println(<span class="string">&quot;保存成功，序号：&quot;</span> + seq);</span><br><span class="line">        <span class="comment">//获取节点</span></span><br><span class="line">		<span class="type">byte</span>[] data = zk.getData(<span class="string">&quot;/hnu&quot;</span>,<span class="literal">null</span>,<span class="literal">null</span>);</span><br><span class="line">		<span class="type">String</span> <span class="variable">v</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">String</span>(data);</span><br><span class="line">		System.out.println(<span class="string">&quot;取得节点内的数据&quot;</span> + v);</span><br><span class="line">        <span class="comment">//修改节点信息</span></span><br><span class="line">		<span class="type">Stat</span> <span class="variable">rs</span> <span class="operator">=</span> zk.setData(seq, <span class="string">&quot;loginOut&quot;</span>.getBytes(),-<span class="number">1</span>);</span><br><span class="line">		System.out.println(<span class="string">&quot;修改结果&quot;</span> + rs);</span><br><span class="line">        <span class="comment">//删除节点</span></span><br><span class="line">		zk.delete(seq, -<span class="number">1</span>);</span><br><span class="line">		System.out.println(<span class="string">&quot;删除成功&quot;</span> + seq);</span><br><span class="line">		zk.close();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在输出中，我们就可以观察到程序对ZooKeeper进行的一系列curd操作了</p>
+<h3 id="3-ZooKeeper实现分布式锁的思路">3. ZooKeeper实现分布式锁的思路</h3>
+<p>ZooKeeper实现分布式锁主要依赖它的两种特性：</p>
+<ul>
+<li>Watcher监听机制</li>
+</ul>
+<p>Watcher 监听机制是 ZooKeeper 的客户端与服务端之间的一种通信方式。当客户端与服务端建立连接后，客户端可以注册一个 Watcher 对象，来监听某个节点的变化。当这个节点的状态发生变化时，服务端会向客户端发送一个通知，告诉客户端这个节点的状态已经发生了变化。客户端收到通知后，可以根据需要执行一些操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.zookeeper.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ZKWatch</span> &#123;</span><br><span class="line"><span class="comment">//    可用的所有的节点地址，注意格式：</span></span><br><span class="line">     <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">nodeAdds</span> <span class="operator">=</span> <span class="string">&quot;localhost:2181,localhost:2182,localhost:2183&quot;</span>;</span><br><span class="line">     <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">         Watcher watch=<span class="keyword">new</span> <span class="title class_">Watcher</span>()&#123;</span><br><span class="line"><span class="comment">// 创建一个监听器对象</span></span><br><span class="line">             <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">process</span><span class="params">(WatchedEvent e)</span> &#123;</span><br><span class="line">                 System.out.println(<span class="string">&quot;WatchedEvent:&quot;</span>+e.getPath()+<span class="string">&quot; &quot;</span>+e.getType());</span><br><span class="line">                 <span class="keyword">if</span>(e.getType()==Watcher.Event.EventType.NodeDeleted)&#123;</span><br><span class="line">                 System.out.println(<span class="string">&quot; NodeDeleted&quot;</span>);</span><br><span class="line">                 &#125;</span><br><span class="line">                 <span class="keyword">if</span>(e.getType()==Watcher.Event.EventType.NodeCreated)&#123;</span><br><span class="line">                 System.out.println(<span class="string">&quot; NodeCreated&quot;</span>);</span><br><span class="line">                 &#125;</span><br><span class="line">                 <span class="keyword">if</span>(e.getType()==Watcher.Event.EventType.NodeDataChanged)&#123;</span><br><span class="line">                 System.out.println(<span class="string">&quot; NodeDataChanged&quot;</span>);</span><br><span class="line">                 &#125;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;;</span><br><span class="line">         <span class="comment">//将此 watch 对象加给连结对象，此处监听根节点，及其以下所有子节点变化</span></span><br><span class="line">        <span class="comment">// AddWatchMode.PERSISTENT : 只监听指定的 path</span></span><br><span class="line">        <span class="comment">// AddWatchMode.PERSISTENT_RECURSIVE :监听 path 下所有节点</span></span><br><span class="line">        <span class="comment">// 如设为根目录 / 则所有节点的 crud 操作都会响应</span></span><br><span class="line">         <span class="type">ZooKeeper</span> <span class="variable">zk</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ZooKeeper</span>(nodeAdds, <span class="number">3000</span>, watch);</span><br><span class="line">         zk.addWatch(<span class="string">&quot;/&quot;</span>, watch, AddWatchMode.PERSISTENT_RECURSIVE);</span><br><span class="line">         <span class="keyword">while</span>(<span class="literal">true</span>) &#123;</span><br><span class="line">             Thread.sleep(<span class="number">1000</span>); <span class="comment">//暂不退出</span></span><br><span class="line">         &#125;</span><br><span class="line"><span class="comment">// zk.close();</span></span><br><span class="line"><span class="comment">// 关闭连结</span></span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>如果启动了以上程序，再启动curd，该程序就会根据监听到的信息打印了</p>
+<ul>
+<li>临时顺序节点</li>
+</ul>
+<p>ZooKeeper 节点有四种类型：</p>
+<ol>
+<li>
+<p>持久节点（Persistent Node）：创建后一直存在，直到被主动删除。即使创建节点的客户端断开连接，节点依然存在。</p>
+</li>
+<li>
+<p>临时节点（Ephemeral Node）：只在创建它的客户端与 ZooKeeper 之间的连接保持有效时存在。如果客户端与 ZooKeeper 断开连接，那么临时节点也会被删除。</p>
+</li>
+<li>
+<p>持久顺序节点（Persistent Sequential Node）：创建后一直存在，直到被主动删除。与持久节点不同的是，持久顺序节点会根据节点的创建顺序为节点分配一个唯一的编号。这个编号是由 ZooKeeper 保证唯一的。</p>
+</li>
+<li>
+<p>临时顺序节点（Ephemeral Sequential Node）：只在创建它的客户端与 ZooKeeper 之间的连接保持有效时存在。与临时节点不同的是，临时顺序节点也会根据节点的创建顺序为节点分配一个唯一的编号。这个编号是由 ZooKeeper 保证唯一的。如果客户端与 ZooKeeper 断开连接，那么临时顺序节点也会被删除。</p>
+</li>
+</ol>
+<p>临时节点的特征：</p>
+<ul>
+<li>session连接断开就没了</li>
+<li>不能够创建子节点</li>
+<li>不能有同名节点</li>
+<li>监听节点删除和修改的变化</li>
+</ul>
+<p><strong>根据以上两种特性，我们就可以设计出一种分布式锁</strong></p>
+<ol>
+<li>当客户端请求数据时，会在ZooKeeper中建立一个临时顺序节点，这个节点有一个自己的序号</li>
+<li>判断当前序号是否是最小的，如果是则获得分布式锁，可以执行操作</li>
+<li>如果序号不是最小的，监听序号为 当前序号-1 的节点，而后线程进入wait状态，当序号为当前序号-1的节点被删除，则notify，可以开始操作</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.zookeeper.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.Collections;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"><span class="keyword">import</span> java.util.function.DoubleToIntFunction;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ZKShareLock</span> <span class="keyword">extends</span> <span class="title class_">Thread</span>&#123;</span><br><span class="line">    <span class="comment">//抢锁线程（用户进程）内部等待通知器: 在其他用户删除我前面的节点时用</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Object</span> <span class="variable">innerLock</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Object</span>();</span><br><span class="line">    <span class="keyword">private</span> ZooKeeper zconn;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//需要提前创建路径</span></span><br><span class="line">    <span class="keyword">private</span> String basePath=<span class="string">&quot;/ShareLocksTest&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String userPath=basePath+<span class="string">&quot;/User-&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> String cName;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//构造器</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ZKShareLock</span><span class="params">(ZooKeeper zconn, String cName)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.zconn = zconn;</span><br><span class="line">        <span class="built_in">this</span>.cName = cName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">todoSome</span><span class="params">()</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="comment">//耗时操作,模拟用户拿到锁后去做一些事情</span></span><br><span class="line">        <span class="type">Random</span> <span class="variable">ran</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">        <span class="type">int</span> <span class="variable">t</span> <span class="operator">=</span> ran.nextInt(<span class="number">3000</span>)+<span class="number">2000</span>;</span><br><span class="line">        Thread.sleep(t);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//释放锁操作</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">unLock</span><span class="params">(String myPath)</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">					System.out.println(cName + <span class="string">&quot;释放锁&quot;</span> + myPath);</span><br><span class="line">            		<span class="comment">//删除当前节点</span></span><br><span class="line">					zconn.delete(myPath, -<span class="number">1</span>);</span><br><span class="line">            zconn.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//1.建一个自己的临时、顺序节点（CreateMode.EPHEMERAL_SEQUENTIAL）</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">mySeq</span> <span class="operator">=</span> zconn.create(userPath, cName.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);</span><br><span class="line">            System.out.println(cName + <span class="string">&quot; 1-创建顺序临时节点成功：&quot;</span> + mySeq);</span><br><span class="line">            <span class="comment">//2.取地basePath下所有子节点，看是否自己最小</span></span><br><span class="line">            <span class="comment">//取地共享锁路径下所有节点输出</span></span><br><span class="line">            List&lt;String&gt; paths=zconn.getChildren(basePath, <span class="literal">null</span>);</span><br><span class="line">            <span class="comment">//为了排序，只取序号的最后10位</span></span><br><span class="line">            List&lt;String&gt; seqs = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">            <span class="keyword">for</span>(String s:paths) &#123;</span><br><span class="line">                s = s.substring(s.length()-<span class="number">10</span>,s.length());</span><br><span class="line">                seqs.add(s);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//排序</span></span><br><span class="line">            Collections.sort(seqs);</span><br><span class="line">            <span class="comment">//3.取得自己节点所处的排序位置</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">myss</span> <span class="operator">=</span> mySeq.substring(mySeq.length()-<span class="number">10</span>,mySeq.length());</span><br><span class="line">            <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> seqs.indexOf(myss);</span><br><span class="line">            System.out.println(cName + <span class="string">&quot; 2-自己节点所处的排序位置：&quot;</span> + index);</span><br><span class="line">            <span class="comment">//如果自己的节点位置是0，则自己就是第一个获得锁的用户</span></span><br><span class="line">            <span class="keyword">if</span> (index==<span class="number">0</span>)&#123;</span><br><span class="line">                System.out.println(cName + <span class="string">&quot; 3-1 自己节点最小，获得锁&quot;</span>);</span><br><span class="line">                todoSome();</span><br><span class="line">                unLock(userPath+myss);</span><br><span class="line">                System.out.println(cName + <span class="string">&quot; 3-2 执行任务完毕，释放锁&quot;</span>);</span><br><span class="line">                zconn.close();</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//获取当前节点前一节点的序号</span></span><br><span class="line">                <span class="type">String</span> <span class="variable">second</span> <span class="operator">=</span> seqs.get(index - <span class="number">1</span>);</span><br><span class="line">                <span class="type">String</span> <span class="variable">secondPath</span> <span class="operator">=</span> userPath + second;</span><br><span class="line">                System.out.println(cName + <span class="string">&quot; 3- 排位后靠，要等待在路径:&quot;</span> + secondPath);</span><br><span class="line">                <span class="comment">//监听前一节点</span></span><br><span class="line">                addWatcher(secondPath);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    System.out.println(cName + <span class="string">&quot; 3-3 在innerLock上锁定，等待通知事件:&quot;</span>);</span><br><span class="line">                    <span class="comment">//先锁定线程</span></span><br><span class="line">                    <span class="keyword">synchronized</span> (innerLock) &#123;</span><br><span class="line">                        innerLock.wait();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//当前一节点被删除，继续操作</span></span><br><span class="line">                System.out.println(cName + <span class="string">&quot; 3-4 通知事件解除，获得锁&quot;</span>);</span><br><span class="line">                todoSome();</span><br><span class="line">                unLock(userPath + myss);</span><br><span class="line">                zconn.close();</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">addWatcher</span><span class="params">(String secondPath)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="comment">//创建一个监听器对象</span></span><br><span class="line">        <span class="type">Watcher</span> <span class="variable">watcher</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Watcher</span>() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">process</span><span class="params">(WatchedEvent event)</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (event.getType() == Event.EventType.NodeDeleted) &#123;</span><br><span class="line">                    System.out.println(<span class="string">&quot;NodeDeleted&quot;</span>);</span><br><span class="line">                    <span class="comment">//当监听的节点被删除，唤醒监听它的线程</span></span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="keyword">synchronized</span> (innerLock) &#123;</span><br><span class="line">                            innerLock.notify();</span><br><span class="line">                        &#125;</span><br><span class="line">                        System.out.println(cName+<span class="string">&quot;3-2 监听到节点:&quot;</span>+secondPath+<span class="string">&quot;被删除，发出通知&quot;</span>);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment">//设置监听路径</span></span><br><span class="line">        zconn.addWatch(secondPath, watcher,AddWatchMode.PERSISTENT);</span><br><span class="line">        System.out.println(cName+<span class="string">&quot; 3-1 在此路径上加上监听器:&quot;</span>+secondPath);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">nodeAdds</span> <span class="operator">=</span> <span class="string">&quot;localhost:2181,localhost:2182,localhost:2183&quot;</span>;</span><br><span class="line">        <span class="comment">//启动10个线程模拟</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>;i&lt;<span class="number">10</span>;i++)&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="type">ZooKeeper</span> <span class="variable">zconn</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ZooKeeper</span>(nodeAdds, <span class="number">3000</span>, watchedEvent -&gt; &#123;&#125;);</span><br><span class="line">                <span class="type">ZKShareLock</span> <span class="variable">m1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ZKShareLock</span>(zconn,<span class="string">&quot;用户&quot;</span>+i);</span><br><span class="line">                m1.start();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>代码中仍可能存在的问题：</p>
+<p>如果由于网络原因，某个zookeeper客户端提前断开了连接，会导致后续的节点检测到它已被删除，而可能提前解锁进入操作，不过在本地测试环境不太容易出现这种问题。若想在本代码中解决问题，在每次唤醒后再次判断自己是否为当前最小节点也可（有点麻烦）。</p>
+<p>基于临时顺序节点实现分布式锁的大体是这样的，可能在代码实现上会还有一些差异。</p>
+<h3 id="4-两种基于ZooKeeper分布式锁的优缺点">4. 两种基于ZooKeeper分布式锁的优缺点</h3>
+<p>ZooKeeper提供了两种实现分布式锁的方式：基于临时顺序节点和基于临时节点的锁。我们前面所说的都是基于<strong>临时顺序</strong>节点的分布式锁，还有一种是基于<strong>临时</strong>节点的分布式锁。</p>
+<ol>
+<li>基于临时顺序节点的锁</li>
+</ol>
+<p>基于临时顺序节点的锁实现原理是，在ZooKeeper中创建一个临时顺序节点，每个客户端都可以创建这样的节点。当客户端需要获取锁时，它会在指定的ZooKeeper目录下创建一个临时顺序节点，并且获取当前目录下所有的节点列表。然后，它将节点列表排序，并检查自己创建的节点是否是当前节点列表中的第一个节点。如果是，那么它获得了锁，如果不是，那么它会监视比自己小的节点的删除事件，直到这些节点被删除，然后再次尝试获取锁。</p>
+<p>优点：</p>
+<ul>
+<li>能够避免羊群效应（herd effect），即多个客户端同时争抢锁的情况，因为每个客户端都会按顺序获取锁。</li>
+<li>可以保证客户端获取锁的顺序和创建节点的顺序一致，因此可以从一定程度上避免死锁的情况。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>需要频繁创建和删除临时节点，当锁的获取和释放频繁发生时，会对ZooKeeper的性能产生一定影响。</li>
+</ul>
+<ol start="2">
+<li>基于临时节点的锁</li>
+</ol>
+<p>基于临时节点的锁实现原理是，在ZooKeeper中创建一个临时节点，这个节点就是锁的代表。当客户端需要获取锁时，它会在指定的ZooKeeper目录下创建一个临时节点。如果它成功创建了这个节点，那么它就获得了锁，否则它需要等待。当客户端释放锁时，它会删除自己创建的临时节点。</p>
+<p>优点：</p>
+<ul>
+<li>由于每个客户端只创建一个节点，因此可以减少ZooKeeper的负载，对性能的影响比较小。</li>
+<li>可以避免由于客户端崩溃或网络故障导致锁无法释放的问题。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>存在羊群效应，当多个客户端同时争抢锁的情况时，可能会导致大量的客户端同时请求ZooKeeper，影响性能。</li>
+<li>无法保证客户端获取锁的顺序，因此可能会出现死锁的情况。</li>
+</ul>
+<p>如果应用场景中锁的获取和释放频率较低，且需要保证锁的可靠性，那么基于临时节点的锁更为合适；如果应用场景中锁的获取和释放频率较高，且需要保证客户端获取锁的顺序和避免死锁的情况，那么基于临时顺序节点的锁更为合适。</p>
+<p>本文参考：</p>
+<p>​		JavaGuide、CSDN、ChatGPT</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/07/26/Flink%E5%BC%95%E6%93%8E/" rel="prev" title="Flink引擎">
+                  <i class="fa fa-angle-left"></i> Flink引擎
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/07/26/%E7%BB%93%E5%AF%B9%E7%BC%96%E7%A8%8B%E4%BB%A3%E7%A0%81%E4%BA%92%E8%AF%84/" rel="next" title="结对编程代码互评">
+                  结对编程代码互评 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">AlwaysXR</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

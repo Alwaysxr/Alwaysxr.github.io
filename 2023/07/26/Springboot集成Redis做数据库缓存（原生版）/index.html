@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.17.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Springboot集成Redis做数据库缓存（原生版） redis做缓存简单来说就是：系统把表中经常访问的记录放在了Redis中，然后用户查询时先去查询Redis再去查询MySQL，由于缓存在内存中，所以查询会很快，起到提高性能的作用。 先来看效果吧~ 测试案例是把一个查询重复99999次，根据时间来判断性能的好坏。 使用redis时：  不使用redis时：  可以看出使用redis大概快了两">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Springboot集成Redis做数据库缓存（原生版）">
+<meta property="og:url" content="http://example.com/2023/07/26/Springboot%E9%9B%86%E6%88%90Redis%E5%81%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BC%93%E5%AD%98%EF%BC%88%E5%8E%9F%E7%94%9F%E7%89%88%EF%BC%89/index.html">
+<meta property="og:site_name" content="ALWAYSXR BLOG">
+<meta property="og:description" content="Springboot集成Redis做数据库缓存（原生版） redis做缓存简单来说就是：系统把表中经常访问的记录放在了Redis中，然后用户查询时先去查询Redis再去查询MySQL，由于缓存在内存中，所以查询会很快，起到提高性能的作用。 先来看效果吧~ 测试案例是把一个查询重复99999次，根据时间来判断性能的好坏。 使用redis时：  不使用redis时：  可以看出使用redis大概快了两">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z4a.net/images/2023/03/14/defac8a67b0d3fa9b16422502e00af87.png">
+<meta property="og:image" content="https://z4a.net/images/2023/03/14/9b779c3fa0fbbdf4d57cfaf678d6233d.png">
+<meta property="og:image" content="https://z4a.net/images/2023/03/14/3ee69ecf2e34a778f4157fcd83c4018f.png">
+<meta property="og:image" content="https://z4a.net/images/2023/03/14/4f4763156c35499d7f339ab7ee356a7c.png">
+<meta property="og:image" content="https://z4a.net/images/2023/03/14/0fff79d0f661c8e77aacce09b1110bb1.png">
+<meta property="og:image" content="https://z4a.net/images/2023/03/14/c519f3754700ed0cda462ce1ce11a980.png">
+<meta property="og:image" content="https://z4a.net/images/2023/03/14/b3c1f4887e4e5548716e4950442dad5f.png">
+<meta property="og:image" content="https://z4a.net/images/2023/03/14/bdc34c4083bc81135b89151994b6d645.png">
+<meta property="article:published_time" content="2023-07-26T12:49:24.450Z">
+<meta property="article:modified_time" content="2023-07-26T12:53:38.287Z">
+<meta property="article:author" content="AlwaysXR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z4a.net/images/2023/03/14/defac8a67b0d3fa9b16422502e00af87.png">
+
+
+<link rel="canonical" href="http://example.com/2023/07/26/Springboot%E9%9B%86%E6%88%90Redis%E5%81%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BC%93%E5%AD%98%EF%BC%88%E5%8E%9F%E7%94%9F%E7%89%88%EF%BC%89/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/07/26/Springboot%E9%9B%86%E6%88%90Redis%E5%81%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BC%93%E5%AD%98%EF%BC%88%E5%8E%9F%E7%94%9F%E7%89%88%EF%BC%89/","path":"2023/07/26/Springboot集成Redis做数据库缓存（原生版）/","title":"Springboot集成Redis做数据库缓存（原生版）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Springboot集成Redis做数据库缓存（原生版） | ALWAYSXR BLOG</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="ALWAYSXR BLOG" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">ALWAYSXR BLOG</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">WELCOME</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">Springboot集成Redis做数据库缓存（原生版）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#maven%E9%85%8D%E7%BD%AE"><span class="nav-number">1.0.1.</span> <span class="nav-text">maven配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#application%E9%85%8D%E7%BD%AE"><span class="nav-number">1.0.2.</span> <span class="nav-text">application配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java%E4%BB%A3%E7%A0%81"><span class="nav-number">1.0.3.</span> <span class="nav-text">Java代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E4%BB%A3%E7%A0%81"><span class="nav-number">1.0.4.</span> <span class="nav-text">运行代码</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">AlwaysXR</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/26/Springboot%E9%9B%86%E6%88%90Redis%E5%81%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BC%93%E5%AD%98%EF%BC%88%E5%8E%9F%E7%94%9F%E7%89%88%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="AlwaysXR">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Springboot集成Redis做数据库缓存（原生版） | ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Springboot集成Redis做数据库缓存（原生版）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-07-26 20:49:24 / 修改时间：20:53:38" itemprop="dateCreated datePublished" datetime="2023-07-26T20:49:24+08:00">2023-07-26</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1>Springboot集成Redis做数据库缓存（原生版）</h1>
+<p>redis做缓存简单来说就是：系统把表中经常访问的记录放在了Redis中，然后用户查询时先去查询Redis再去查询MySQL，由于缓存在内存中，所以查询会很快，起到提高性能的作用。</p>
+<p>先来看效果吧~</p>
+<p>测试案例是把一个查询重复99999次，根据时间来判断性能的好坏。</p>
+<p>使用redis时：</p>
+<p><img src="https://z4a.net/images/2023/03/14/defac8a67b0d3fa9b16422502e00af87.png" alt="img"></p>
+<p>不使用redis时：</p>
+<p><img src="https://z4a.net/images/2023/03/14/9b779c3fa0fbbdf4d57cfaf678d6233d.png" alt="img"></p>
+<p>可以看出使用redis大概快了两秒钟，确实实现了优化。但是redis可以实现的优化效果作者并不是很了解，这里感觉效果不算特别明显，可能和代码有关系。</p>
+<p>本文所用的方法是原生的redis操作，没有用到springboot自带的缓存机制（不会，下次再更）。本文代码基于<a target="_blank" rel="noopener" href="http://www.alwaysxr777.top:8081/blog/21">之前的文章</a>进行添加，需要源码的同学可以去原文下载。</p>
+<h3 id="maven配置">maven配置</h3>
+<p>添加以下依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-cache<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="application配置">application配置</h3>
+<p>redis默认是没有密码的，所以如果你没有设置密码就不需要写密码啦</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring</span>:<span class="string">redis:host: localhost</span></span><br><span class="line">    <span class="attr">port</span>:<span class="string">6379</span></span><br></pre></td></tr></table></figure>
+<h3 id="Java代码">Java代码</h3>
+<p><img src="https://z4a.net/images/2023/03/14/3ee69ecf2e34a778f4157fcd83c4018f.png" alt="img"></p>
+<ul>
+<li>首先在项目文件夹下新建config文件夹（放配置类）和util文件夹（放工具类）</li>
+<li>在config文件夹下新建RedisConfig类</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableCaching</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisConfig</span> <span class="keyword">extends</span> <span class="title class_">CachingConfigurerSupport</span>&#123;</span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> RedisTemplate redisTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> RedisTemplate <span class="title function_">redisTemplateInit</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="comment">//序列化key的实例化对象</span></span><br><span class="line">        redisTemplate.setKeySerializer(<span class="keyword">new</span> <span class="title class_">StringRedisSerializer</span>());</span><br><span class="line">        <span class="comment">//序列化value的实例化对象</span></span><br><span class="line">        redisTemplate.setValueSerializer(<span class="keyword">new</span> <span class="title class_">GenericJackson2JsonRedisSerializer</span>());</span><br><span class="line">        <span class="keyword">return</span> redisTemplate;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RedisTemplate是<strong>Spring Data Redis提供给用户的最高级的抽象客户端</strong>，用户可直接通过RedisTemplate进行多种操作,例如set、get</p>
+<ul>
+<li>（非必须）可以在config文件夹下新建一个RedisConstant类来存储redis的key</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisConstant</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String USER_KEY=<span class="string">&quot;User&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>到时候使用时直接调用参数即可</p>
+<ul>
+<li>在util文件夹下新建RedisUtil类，里面的内容是封装好的redis操作，网上有很多大佬写的工具类，通用性比较高，找到合适的可以直接拿来用</li>
+</ul>
+<p>我找到的工具类有很多功能，代码比较长，放在文章的最后</p>
+<ul>
+<li>在serverimpl中添加redis的相关代码</li>
+</ul>
+<p>主要逻辑是查询前先在redis中寻找有没有要查找的内容，如果没有再去数据库中查找，数据库返回的值顺便存入redis，这样下次再访问时就可以从redis中读到数据了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserServiceImpl</span> <span class="keyword">implements</span> <span class="title class_">UserService</span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    UserMapper userMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    RedisUtil redisUtil;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    publicList&lt;User&gt; <span class="title function_">queryAll</span><span class="params">()</span>&#123;<span class="comment">//试图从redis获取</span></span><br><span class="line">        List&lt;User&gt; users =(List&lt;User&gt;) redisUtil.get(RedisConstant.USER_KEY);<span class="comment">//获取失败则去数据库查找</span></span><br><span class="line">        <span class="keyword">if</span>(CollectionUtils.isEmpty(users))&#123;</span><br><span class="line">            users=userMapper.queryAll();<span class="comment">//返回的数据存入redis</span></span><br><span class="line">            redisUtil.set(RedisConstant.USER_KEY,users);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> users;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">changePassword</span><span class="params">(String username,String password)</span>&#123;<span class="comment">//为了防止数据不一致，在数据库数据改变时先清楚之前redis的相关缓存</span></span><br><span class="line">        redisUtil.del(RedisConstant.USER_KEY);</span><br><span class="line">        userMapper.changePassword(username,password);</span><br><span class="line">        System.out.println(<span class="string">&quot;修改成功&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码部分就到此结束了~</p>
+<h3 id="运行代码">运行代码</h3>
+<p>首先你的电脑要先启动redis服务器端才可以。</p>
+<p>redis官方是没有Windows版的，不过已经有大佬开发出了Windows版，安装起来比较简单，没什么需要注意的。大家跟着<a target="_blank" rel="noopener" href="https://www.runoob.com/redis/redis-install.html">菜鸟教程</a>先在自己电脑上安装redis吧！</p>
+<p>安装好了，有的同学就要问了，redis现在只能在它自己的目录下运行，这可怎么办捏？</p>
+<p>很简单，我们把redis的路径添加到环境变量中，就可以在任意位置启动redis了</p>
+<p><img src="https://z4a.net/images/2023/03/14/4f4763156c35499d7f339ab7ee356a7c.png" alt="img"></p>
+<p>耗，现在我们打开cmd，输入redis-server，就可以启动redis服务端了（默认的端口6379）</p>
+<p><img src="https://z4a.net/images/2023/03/14/0fff79d0f661c8e77aacce09b1110bb1.png" alt="img"></p>
+<p><strong>不要关闭服务端界面</strong>，再打开一个cmd，输入redis-cli，就可以启动客户端了（默认的端口6379）</p>
+<p><img src="https://z4a.net/images/2023/03/14/c519f3754700ed0cda462ce1ce11a980.png" alt="img"></p>
+<p>现在，来运行我们写好的程序吧</p>
+<p>进入localhost:8084，点击获取，我们会从数据库查到数据，同时把数据存入redis，这时我们在redis客户端就可以查到数据了~</p>
+<p><img src="https://z4a.net/images/2023/03/14/b3c1f4887e4e5548716e4950442dad5f.png" alt="img"></p>
+<p>如果你想不起来你的键叫什么，又不想去看代码，那么查询现在redis中存有的键：keys *</p>
+<p><img src="https://z4a.net/images/2023/03/14/bdc34c4083bc81135b89151994b6d645.png" alt="img"></p>
+<p>现在你可以自己写一个测试用例来看看效果如何了。</p>
+<p>虽然在大项目中redis肯定不是这么用的，但是对于作者来说，起码算是用起来了，后面再学习正确的简洁的使用方式，学会了来给大噶更新！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/07/26/Springboot+ajax+mybatis%E5%AE%9E%E7%8E%B0%E7%AE%80%E6%98%93%E7%BD%91%E9%A1%B5/" rel="prev" title="Springboot+ajax+mybatis实现简易网页">
+                  <i class="fa fa-angle-left"></i> Springboot+ajax+mybatis实现简易网页
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/07/26/Vue%E7%9A%84%E5%AE%89%E8%A3%85/" rel="next" title="VUE的安装">
+                  VUE的安装 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">AlwaysXR</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

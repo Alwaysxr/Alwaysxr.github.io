@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.17.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="软件工程导论-个人项目 题目要求 用户： 小学、初中和高中数学老师。 功能： 1、命令行输入用户名和密码，两者之间用空格隔开（程序预设小学、初中和高中各三个账号，具体见附表），如果用户名和密码都正确，将根据账户类型显示“当前选择为XX出题”，XX为小学、初中和高中三个选项中的一个。否则提示“请输入正确的用户名、密码”，重新输入用户名、密码； while循环 2、登录后，系统提示“准备生成XX数学题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="软件工程导论-个人项目">
+<meta property="og:url" content="http://example.com/2023/07/26/%E4%B8%AD%E5%B0%8F%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%8D%B7%E5%AD%90%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E7%A8%8B%E5%BA%8F/index.html">
+<meta property="og:site_name" content="ALWAYSXR BLOG">
+<meta property="og:description" content="软件工程导论-个人项目 题目要求 用户： 小学、初中和高中数学老师。 功能： 1、命令行输入用户名和密码，两者之间用空格隔开（程序预设小学、初中和高中各三个账号，具体见附表），如果用户名和密码都正确，将根据账户类型显示“当前选择为XX出题”，XX为小学、初中和高中三个选项中的一个。否则提示“请输入正确的用户名、密码”，重新输入用户名、密码； while循环 2、登录后，系统提示“准备生成XX数学题">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z4a.net/images/2023/03/14/3c58d745ad0aa3ae675db301b26ebb9a.png">
+<meta property="article:published_time" content="2023-07-26T12:49:24.434Z">
+<meta property="article:modified_time" content="2023-07-26T12:52:05.683Z">
+<meta property="article:author" content="AlwaysXR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z4a.net/images/2023/03/14/3c58d745ad0aa3ae675db301b26ebb9a.png">
+
+
+<link rel="canonical" href="http://example.com/2023/07/26/%E4%B8%AD%E5%B0%8F%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%8D%B7%E5%AD%90%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E7%A8%8B%E5%BA%8F/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/07/26/%E4%B8%AD%E5%B0%8F%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%8D%B7%E5%AD%90%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E7%A8%8B%E5%BA%8F/","path":"2023/07/26/中小学数学卷子自动生成程序/","title":"软件工程导论-个人项目"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>软件工程导论-个人项目 | ALWAYSXR BLOG</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="ALWAYSXR BLOG" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">ALWAYSXR BLOG</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">WELCOME</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E8%A6%81%E6%B1%82"><span class="nav-number">1.</span> <span class="nav-text">题目要求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">代码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E7%94%A8%E6%88%B7%E7%B1%BB-User"><span class="nav-number">2.0.1.</span> <span class="nav-text">1. 用户类-User</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-%E8%AF%95%E5%8D%B7%E7%94%9F%E6%88%90%E7%B1%BB-PaperMaker"><span class="nav-number">2.0.2.</span> <span class="nav-text">2. 试卷生成类-PaperMaker</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-%E6%96%87%E4%BB%B6%E8%BE%93%E5%87%BA%E7%B1%BB-IOController"><span class="nav-number">2.0.3.</span> <span class="nav-text">3.文件输出类-IOController</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-%E7%99%BB%E5%BD%95%E7%B1%BB-Login"><span class="nav-number">2.0.4.</span> <span class="nav-text">4. 登录类-Login</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-%E4%B8%BB%E7%B1%BB-Main"><span class="nav-number">2.0.5.</span> <span class="nav-text">5. 主类-Main</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">AlwaysXR</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/26/%E4%B8%AD%E5%B0%8F%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%8D%B7%E5%AD%90%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E7%A8%8B%E5%BA%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="AlwaysXR">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="软件工程导论-个人项目 | ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          软件工程导论-个人项目
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-07-26 20:49:24 / 修改时间：20:52:05" itemprop="dateCreated datePublished" datetime="2023-07-26T20:49:24+08:00">2023-07-26</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><strong>软件工程导论-个人项目</strong></p>
+<h3 id="题目要求">题目要求</h3>
+<p>用户：</p>
+<p>小学、初中和高中数学老师。</p>
+<p>功能：</p>
+<p>1、命令行输入用户名和密码，两者之间用空格隔开（程序预设小学、初中和高中各三个账号，具体见附表），如果用户名和密码都正确，将根据账户类型显示“当前选择为XX出题”，XX为小学、初中和高中三个选项中的一个。否则提示“请输入正确的用户名、密码”，重新输入用户名、密码； while循环</p>
+<p>2、登录后，系统提示“准备生成XX数学题目，请输入生成题目数量（输入-1将退出当前用户，重新登录）：”，XX为小学、初中和高中三个选项中的一个，用户输入所需出的卷子的题目数量，系统默认将根据账号类型进行出题。每道题目的操作数在1-5个之间，操作数取值范围为1-100；</p>
+<p>3、题目数量的有效输入范围是“10-30”（含10,30，或-1退出登录），程序根据输入的题目数量生成符合小学、初中和高中难度的题目的卷子（具体要求见附表）。同一个老师的卷子中的题目不能与以前的已生成的卷子中的题目重复（以指定文件夹下存在的文件为准，见5）；</p>
+<p>4、在登录状态下，如果用户需要切换类型选项，命令行输入“切换为XX”，XX为小学、初中和高中三个选项中的一个，输入项不符合要求时，程序控制台提示“请输入小学、初中和高中三个选项中的一个”；输入正确后，显示“”系统提示“准备生成XX数学题目，请输入生成题目数量”，用户输入所需出的卷子的题目数量，系统新设置的类型进行出题；</p>
+<p>5、生成的题目将以“年-月-日-时-分-秒.txt”的形式保存，每个账号一个文件夹。每道题目有题号，每题之间空一行；</p>
+<p>6、个人项目9月11日晚上10点以前提交至创新课程管理系统。提交方式：工程文件打包，压缩包名为“几班+姓名.rar”。迟交2天及以内者扣分，每天扣20%。迟交2天及以上者0分。</p>
+<p><img src="https://z4a.net/images/2023/03/14/3c58d745ad0aa3ae675db301b26ebb9a.png" alt="img"></p>
+<h3 id="代码分析">代码分析</h3>
+<h5 id="1-用户类-User">1. 用户类-User</h5>
+<p>根据题目需求，用户类应该主要拥有三个属性：用户名、密码和用户所属的学校种类。设置好User类的构造函数和getter、setter便于后续对其进行新增和修改操作。</p>
+<p>定义makePaper方法用于生成对应类型的试卷。</p>
+<p>注意：在判断字符相同时使用equals()方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> String username;</span><br><span class="line">    <span class="keyword">private</span> String password;</span><br><span class="line">    <span class="keyword">private</span> String type;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">User</span><span class="params">(String username, String password, String type)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.username = username;</span><br><span class="line">        <span class="built_in">this</span>.password = password;</span><br><span class="line">        <span class="built_in">this</span>.type = type;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getUsername</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> username;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getPassword</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> password;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getType</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> type;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setType</span><span class="params">(String type)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.type = type;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//开始制作试卷</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">makePaper</span><span class="params">(User user, <span class="type">int</span> num)</span> &#123;</span><br><span class="line">        <span class="type">PaperMaker</span> <span class="variable">paperMaker</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PaperMaker</span>();</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">this</span>.type.equals(<span class="string">&quot;小学&quot;</span>)) &#123;</span><br><span class="line">            paperMaker.makePrimary(user, num);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">this</span>.type.equals(<span class="string">&quot;初中&quot;</span>)) &#123;</span><br><span class="line">            paperMaker.makeJunior(user, num);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">this</span>.type.equals(<span class="string">&quot;高中&quot;</span>)) &#123;</span><br><span class="line">            paperMaker.makeSenior(user, num);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="2-试卷生成类-PaperMaker">2. 试卷生成类-PaperMaker</h5>
+<p>因为题目分为三个难度，所以创建三个链表分别存储对应难度的符号，在构造函数中进行数据的初始化。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//小学专用符号</span></span><br><span class="line"><span class="keyword">private</span> LinkedList&lt;String&gt; primary = <span class="keyword">new</span> <span class="title class_">LinkedList</span>&lt;&gt;();</span><br><span class="line"><span class="comment">//初中专用符号</span></span><br><span class="line"><span class="keyword">private</span> LinkedList&lt;String&gt; junior = <span class="keyword">new</span> <span class="title class_">LinkedList</span>&lt;&gt;();</span><br><span class="line"><span class="comment">//高中专用符号</span></span><br><span class="line"><span class="keyword">private</span> LinkedList&lt;String&gt; senior = <span class="keyword">new</span> <span class="title class_">LinkedList</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">PaperMaker</span><span class="params">()</span> &#123;</span><br><span class="line">    primary.add(<span class="string">&quot;+&quot;</span>);</span><br><span class="line">    primary.add(<span class="string">&quot;-&quot;</span>);</span><br><span class="line">    primary.add(<span class="string">&quot;×&quot;</span>);</span><br><span class="line">    primary.add(<span class="string">&quot;÷&quot;</span>);</span><br><span class="line">    junior.add(<span class="string">&quot;²&quot;</span>);</span><br><span class="line">    junior.add(<span class="string">&quot;√&quot;</span>);</span><br><span class="line">    senior.add(<span class="string">&quot;&quot;</span>);</span><br><span class="line">    senior.add(<span class="string">&quot;sin&quot;</span>);</span><br><span class="line">    senior.add(<span class="string">&quot;cos&quot;</span>);</span><br><span class="line">    senior.add(<span class="string">&quot;tan&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>makePrimary是生成小学题目的方法：传入对象user和所需生成的题目数量,即可进行生成。</p>
+<p>实现操作数随机，设置cnt计数器，固定最大数量为5；设置breakOrNot参数，该参数在每次添加数据后随机更新决定是否退出，来实现随机个操作数的功能。</p>
+<p>实现随机括号功能，设置bracket参数记录未闭合的括号数量，设置bracketOrNot参数每轮取随机数来决定是否加入左括号，设置rightBracket参数每轮取随机数来决定是否加入右括号，算式生成结束后，根据bracket的值在式子末尾补全右括号。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//生成小学难度题目 生成数量是number</span></span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">makePrimary</span><span class="params">(User user, <span class="type">int</span> number)</span> &#123;</span><br><span class="line">     <span class="comment">//生成多少道题目就执行多少次循环</span></span><br><span class="line">     <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; number; i++) &#123;</span><br><span class="line">         <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">         <span class="type">StringBuffer</span> <span class="variable">stringBuffer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuffer</span>();</span><br><span class="line">         <span class="comment">//判断括号配对</span></span><br><span class="line">         <span class="type">int</span> <span class="variable">bracket</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">         <span class="comment">//判断退出</span></span><br><span class="line">         <span class="type">int</span> <span class="variable">breakOrNot</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">         <span class="comment">//操作数最多个数</span></span><br><span class="line">         <span class="type">int</span> <span class="variable">cnt</span> <span class="operator">=</span> <span class="number">5</span>;</span><br><span class="line">         <span class="comment">//保证操作数不超过5个</span></span><br><span class="line">         <span class="keyword">while</span> (cnt-- &gt; <span class="number">0</span>) &#123;</span><br><span class="line">             <span class="comment">//判断是否本轮退出</span></span><br><span class="line">             breakOrNot = random.nextInt(<span class="number">2</span>);</span><br><span class="line">             <span class="comment">//随机加入 (</span></span><br><span class="line">             <span class="type">int</span> <span class="variable">bracketOrNot</span> <span class="operator">=</span> random.nextInt(<span class="number">3</span>);</span><br><span class="line">             <span class="keyword">if</span> (bracketOrNot == <span class="number">1</span> &amp;&amp; breakOrNot != <span class="number">1</span> &amp;&amp; cnt != <span class="number">0</span>) &#123;</span><br><span class="line">                 bracket++;</span><br><span class="line">                 stringBuffer.append(<span class="string">&quot;(&quot;</span>);</span><br><span class="line">             &#125;</span><br><span class="line"></span><br><span class="line">             <span class="comment">//随机生成1-100之间的操作数</span></span><br><span class="line">             <span class="type">int</span> <span class="variable">ran</span> <span class="operator">=</span> random.nextInt(<span class="number">100</span>) + <span class="number">1</span>;</span><br><span class="line">             stringBuffer.append(ran);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">             <span class="comment">//判断 加入 )</span></span><br><span class="line">             <span class="type">int</span> <span class="variable">rightBracket</span> <span class="operator">=</span> random.nextInt(<span class="number">2</span>);</span><br><span class="line">             <span class="keyword">if</span> (bracketOrNot != <span class="number">1</span> &amp;&amp; bracket &gt; <span class="number">0</span> &amp;&amp; rightBracket == <span class="number">1</span>) &#123;</span><br><span class="line">                 stringBuffer.append(<span class="string">&quot;)&quot;</span>);</span><br><span class="line">                 bracket--;</span><br><span class="line">             &#125;</span><br><span class="line">             <span class="comment">//随机结束算式</span></span><br><span class="line">             <span class="keyword">if</span> (cnt != <span class="number">4</span>) &#123;</span><br><span class="line">                 <span class="keyword">if</span> (breakOrNot == <span class="number">1</span> || cnt == <span class="number">0</span>) &#123;</span><br><span class="line">                     <span class="keyword">break</span>;</span><br><span class="line">                 &#125;</span><br><span class="line">             &#125;</span><br><span class="line">             <span class="comment">//随机生成符号</span></span><br><span class="line">             <span class="type">int</span> <span class="variable">symbolSelect</span> <span class="operator">=</span> random.nextInt(<span class="number">4</span>);</span><br><span class="line">             <span class="type">String</span> <span class="variable">symbol</span> <span class="operator">=</span> primary.get(symbolSelect);</span><br><span class="line">             stringBuffer.append(symbol);</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="comment">//补全 )</span></span><br><span class="line">         <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; bracket; j++) &#123;</span><br><span class="line">             stringBuffer.append(<span class="string">&quot;)&quot;</span>);</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="comment">//输出 =</span></span><br><span class="line">         stringBuffer.append(<span class="string">&quot;=&quot;</span>);</span><br><span class="line">         <span class="comment">//生成试卷</span></span><br><span class="line">         <span class="type">IOController</span> <span class="variable">ioController</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">IOController</span>();</span><br><span class="line">         <span class="comment">//生成试卷文件</span></span><br><span class="line">         <span class="type">File</span> <span class="variable">newFile</span> <span class="operator">=</span> ioController.makeFile(user);</span><br><span class="line">         <span class="comment">//存储题目</span></span><br><span class="line">         <span class="type">String</span> <span class="variable">title</span> <span class="operator">=</span> stringBuffer.toString();</span><br><span class="line">         <span class="comment">//题目查重</span></span><br><span class="line">         <span class="keyword">if</span> (ioController.check(newFile, title) == <span class="literal">true</span>) &#123;</span><br><span class="line">             i--;</span><br><span class="line">             <span class="keyword">continue</span>;</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="comment">//写入试卷</span></span><br><span class="line">         ioController.writeIn(newFile, i + <span class="number">1</span>, title);</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>makeJunior是生成初中题目的方法，逻辑基本与上文类似，新增随机加入根号和平方的方法。由于要确保每个算式至少有一个根号或平方，故在while循环外定义squareOrNot = 1来确保每个式子都有平方。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">squareOrNot</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//随机加根号</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">evolutionOrNot</span> <span class="operator">=</span> random.nextInt(<span class="number">2</span>);</span><br><span class="line">    <span class="keyword">if</span> (evolutionOrNot == <span class="number">1</span>) &#123;</span><br><span class="line">        stringBuffer.append(junior.get(<span class="number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//随机加平方</span></span><br><span class="line">    <span class="keyword">if</span> (squareOrNot == <span class="number">1</span>) &#123;</span><br><span class="line">        stringBuffer.append(junior.get(<span class="number">0</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    squareOrNot = random.nextInt(<span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+<p>makeSenior是生成高中题目的方法，逻辑基本与上文类似，新增随即加入三角函数的方法,不再做详细解释。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">tFunction</span> <span class="operator">=</span> random.nextInt(<span class="number">3</span>) + <span class="number">1</span>;                </span><br><span class="line"></span><br><span class="line">    <span class="comment">//随机生成三角函数</span></span><br><span class="line">    stringBuffer.append(senior.get(tFunction));</span><br><span class="line">    tFunction = random.nextInt(<span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+<h5 id="3-文件输出类-IOController">3.文件输出类-IOController</h5>
+<p>文件输出主要分三部分：</p>
+<ol>
+<li>找到或生成对应的文件夹和txt文件</li>
+</ol>
+<p>首先确定文件夹的路径，若之前该文件夹不存在则新创建这个文件夹。再获取当前时间，生成txt 文件的题目，创建这个txt文件。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//生成专用文件夹 和 txt文件</span></span><br><span class="line"><span class="keyword">public</span> File <span class="title function_">makeFile</span><span class="params">(User user)</span> &#123;</span><br><span class="line">    <span class="type">String</span> <span class="variable">mkPath</span> <span class="operator">=</span> <span class="string">&quot;D:\\JavaProject\\AutomationPaper\\paper\\&quot;</span> + user.getUsername();</span><br><span class="line">    <span class="type">File</span> <span class="variable">file</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(mkPath);</span><br><span class="line">    <span class="type">Date</span> <span class="variable">date</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Date</span>();</span><br><span class="line">    <span class="comment">//时间处理  用于txt文件的名称</span></span><br><span class="line">    <span class="type">SimpleDateFormat</span> <span class="variable">simpleDateFormat</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SimpleDateFormat</span>(<span class="string">&quot;yyyy-MM-dd-HH-mm-ss&quot;</span>);</span><br><span class="line">    <span class="type">String</span> <span class="variable">title</span> <span class="operator">=</span> simpleDateFormat.format(date) + <span class="string">&quot;.txt&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span> (!file.exists()) &#123;</span><br><span class="line">        <span class="comment">//单例模式  如果没有对应文件夹则生成</span></span><br><span class="line">        file.mkdirs();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">File</span> <span class="variable">paper</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(mkPath, title);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        paper.createNewFile();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> paper;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>文件的写入</li>
+</ol>
+<p>没什么说的，直接看代码吧。</p>
+<p>写完后记得调用flush()函数刷新文件，否则可能出现写入失败的情况。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//写入文件</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">writeIn</span><span class="params">(File file, Integer n, String title)</span> &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">//传入文件 确定类型为续写</span></span><br><span class="line">        <span class="type">FileWriter</span> <span class="variable">fileWriter</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileWriter</span>(file, <span class="literal">true</span>);</span><br><span class="line">        <span class="comment">//序号</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">num</span> <span class="operator">=</span> n.toString() + <span class="string">&quot;.&quot;</span>;</span><br><span class="line">        fileWriter.append(num + <span class="string">&quot; &quot;</span> + title);</span><br><span class="line">        <span class="comment">//空一行</span></span><br><span class="line">        fileWriter.append(<span class="string">&quot;\r\n&quot;</span>);</span><br><span class="line">        fileWriter.append(<span class="string">&quot;\r\n&quot;</span>);</span><br><span class="line">        <span class="comment">//刷新文件，关闭writer</span></span><br><span class="line">        fileWriter.flush();</span><br><span class="line">        fileWriter.close();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>算式查重</li>
+</ol>
+<p>遍历该txt文件的上一级目录，来获取这个用户所获取的所有试题，再对每一套试题进行遍历对比，若重复则返回true，否则返回false。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">check</span><span class="params">(File file, String title)</span> &#123;</span><br><span class="line">    <span class="comment">//定义变量 是否重复</span></span><br><span class="line">    <span class="type">boolean</span> <span class="variable">repetition</span> <span class="operator">=</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="comment">//获取txt文件上一级目录的路径</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">parentPath</span> <span class="operator">=</span> file.getParent();</span><br><span class="line">    <span class="type">File</span> <span class="variable">parent</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(parentPath);</span><br><span class="line">    <span class="comment">//遍历上一级目录，获得其下的所有文件</span></span><br><span class="line">    File[] files = parent.listFiles();</span><br><span class="line">    <span class="comment">//一个一个文件进行查重对比</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; files.length; i++) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">FileReader</span> <span class="variable">fileReader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileReader</span>(files[i]);</span><br><span class="line">            <span class="type">BufferedReader</span> <span class="variable">bufferedReader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BufferedReader</span>(fileReader);</span><br><span class="line">            <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">                <span class="comment">//读取一行数据</span></span><br><span class="line">                <span class="type">String</span> <span class="variable">usedTitle</span> <span class="operator">=</span> bufferedReader.readLine();</span><br><span class="line">                <span class="comment">//如果是空行就跳过</span></span><br><span class="line">                <span class="keyword">if</span> (usedTitle == <span class="literal">null</span>) &#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//以&quot; &quot;为分隔符,&quot; &quot;后面的就是算式</span></span><br><span class="line">                String[] uT = usedTitle.split(<span class="string">&quot; &quot;</span>);</span><br><span class="line">                <span class="keyword">if</span> (uT.length &gt; <span class="number">1</span>) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (uT[<span class="number">1</span>].equals(title)) &#123;</span><br><span class="line">                        System.out.println(<span class="string">&quot;重复&quot;</span>);</span><br><span class="line">                        <span class="comment">//如果重复改变变量的值</span></span><br><span class="line">                        repetition = <span class="literal">true</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> repetition;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="4-登录类-Login">4. 登录类-Login</h5>
+<p>登陆类需存储当前已有用户的信息，负责用户的登录判断、操作判断和改变用户的类型。</p>
+<p>信息初始化</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">HashMap&lt;String, User&gt; userMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">Login</span><span class="params">()</span> &#123;</span><br><span class="line">    userMap.put(<span class="string">&quot;张三1&quot;</span>, <span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;张三1&quot;</span>, <span class="string">&quot;123&quot;</span>, <span class="string">&quot;小学&quot;</span>));</span><br><span class="line">    userMap.put(<span class="string">&quot;张三2&quot;</span>, <span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;张三2&quot;</span>, <span class="string">&quot;123&quot;</span>, <span class="string">&quot;小学&quot;</span>));</span><br><span class="line">    userMap.put(<span class="string">&quot;张三3&quot;</span>, <span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;张三3&quot;</span>, <span class="string">&quot;123&quot;</span>, <span class="string">&quot;小学&quot;</span>));</span><br><span class="line">    userMap.put(<span class="string">&quot;李四1&quot;</span>, <span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;李四1&quot;</span>, <span class="string">&quot;123&quot;</span>, <span class="string">&quot;初中&quot;</span>));</span><br><span class="line">    userMap.put(<span class="string">&quot;李四2&quot;</span>, <span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;李四2&quot;</span>, <span class="string">&quot;123&quot;</span>, <span class="string">&quot;初中&quot;</span>));</span><br><span class="line">    userMap.put(<span class="string">&quot;李四3&quot;</span>, <span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;李四3&quot;</span>, <span class="string">&quot;123&quot;</span>, <span class="string">&quot;初中&quot;</span>));</span><br><span class="line">    userMap.put(<span class="string">&quot;王五1&quot;</span>, <span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;王五1&quot;</span>, <span class="string">&quot;123&quot;</span>, <span class="string">&quot;高中&quot;</span>));</span><br><span class="line">    userMap.put(<span class="string">&quot;王五2&quot;</span>, <span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;王五2&quot;</span>, <span class="string">&quot;123&quot;</span>, <span class="string">&quot;高中&quot;</span>));</span><br><span class="line">    userMap.put(<span class="string">&quot;王五3&quot;</span>, <span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;王五3&quot;</span>, <span class="string">&quot;123&quot;</span>, <span class="string">&quot;高中&quot;</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>用户登录与操作判断</p>
+<p>根据表内信息，由用户名获取密码来与输入的密码进行比较来判断是登陆成功。登陆成功后根据输入的数据长度来判断用户想进行切换操作、生成题目操作还是退出操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//用户登录</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">userLogin</span><span class="params">(String username, String password)</span> &#123;</span><br><span class="line">    <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> userMap.get(username);</span><br><span class="line">    System.out.println(<span class="string">&quot;当前选择为&quot;</span> + user.getType() + <span class="string">&quot;出题&quot;</span>);</span><br><span class="line">    <span class="comment">//判断密码是否正确</span></span><br><span class="line">    <span class="keyword">if</span> (user.getPassword().equals(password)) &#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;准备生成&quot;</span> + user.getType()</span><br><span class="line">                    + <span class="string">&quot;数学题目，请输入生成题目数量（输入-1将退出当前用户，重新登录）：&quot;</span>);</span><br><span class="line">            <span class="type">String</span> <span class="variable">inStr</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(System.in).next();</span><br><span class="line">            <span class="comment">//当输入的是  切换为XX  时</span></span><br><span class="line">            <span class="keyword">if</span> (inStr.length() &gt; <span class="number">4</span>) &#123;</span><br><span class="line">                <span class="type">String</span> <span class="variable">sub</span> <span class="operator">=</span> inStr.substring(<span class="number">0</span>, <span class="number">3</span>);</span><br><span class="line">                <span class="keyword">if</span> (sub.equals(<span class="string">&quot;切换为&quot;</span>)) &#123;</span><br><span class="line">                    setUserType(username, inStr.substring(<span class="number">3</span>, <span class="number">5</span>));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;<span class="comment">//输入的是数字时</span></span><br><span class="line">                <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> Integer.parseInt(inStr);</span><br><span class="line">                <span class="keyword">if</span> (num == -<span class="number">1</span>) &#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (num &gt;= <span class="number">10</span> &amp;&amp; num &lt;= <span class="number">30</span>) &#123;</span><br><span class="line">                    user.makePaper(user, num);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    System.out.println(<span class="string">&quot;请输入10-30之间的自然数 或 输入-1退出&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;请输入正确的用户名、密码&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>改变用户类型</p>
+<p>没什么好说的，传入用户名和要变成的类型即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//用于改变用户的类型</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUserType</span><span class="params">(String username, String type)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (type.equals(<span class="string">&quot;小学&quot;</span>)) &#123;</span><br><span class="line">        userMap.get(username).setType(type);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (type.equals(<span class="string">&quot;初中&quot;</span>)) &#123;</span><br><span class="line">        userMap.get(username).setType(type);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (type.equals(<span class="string">&quot;高中&quot;</span>)) &#123;</span><br><span class="line">        userMap.get(username).setType(type);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;请输入小学、初中和高中三个选项中的一个&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="5-主类-Main">5. 主类-Main</h5>
+<p>通过死循环来实现退出登录后不会结束程序，而是再次让用户输入用户名密码。用户名和密码通过空格分隔，故对密码进行去除空格（trim）处理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">Scanner</span> <span class="variable">in</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(System.in);</span><br><span class="line">        <span class="type">Login</span> <span class="variable">login</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Login</span>();</span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">            <span class="comment">//识别用户名和密码</span></span><br><span class="line">            System.out.println(<span class="string">&quot;请输入用户名、密码&quot;</span>);</span><br><span class="line">            login.userLogin(in.next(), in.nextLine().trim());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>说实话程序逻辑总体还是有点乱的，后续想在进行优化调整。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/07/26/%E5%9B%A2%E9%98%9F%E9%A1%B9%E7%9B%AE%E5%A4%8D%E7%9B%98/" rel="prev" title="团队项目复盘">
+                  <i class="fa fa-angle-left"></i> 团队项目复盘
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/07/26/Java%20-%20PriorityQueue%20%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97/" rel="next" title="Java - PriorityQueue 优先队列">
+                  Java - PriorityQueue 优先队列 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">AlwaysXR</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
