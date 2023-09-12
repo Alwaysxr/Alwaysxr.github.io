@@ -114,7 +114,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">23</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -132,6 +132,388 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/26/Windows%E4%B8%8B%E7%9A%84Java%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86--jabba/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="AlwaysXR">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/07/26/Windows%E4%B8%8B%E7%9A%84Java%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86--jabba/" class="post-title-link" itemprop="url">Windows下的Java版本管理--jabba</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-07-26 20:49:24 / 修改时间：20:54:14" itemprop="dateCreated datePublished" datetime="2023-07-26T20:49:24+08:00">2023-07-26</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1>Windows下的Java版本管理–jabba</h1>
+<p>jabba相关信息：</p>
+<p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/shyiko/jabba">https://github.com/shyiko/jabba</a></p>
+<p>参考文档：<a target="_blank" rel="noopener" href="https://www.cjavapy.com/article/96/">https://www.cjavapy.com/article/96/</a></p>
+<h4 id="安装">安装</h4>
+<p>在管理员身份下的powershell执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[Net.ServicePointManager]::SecurityProtocol =[Net.SecurityProtocolType]::Tls12</span><br><span class="line">Invoke-Expression (</span><br><span class="line">  Invoke-WebRequest https://github.com/shyiko/jabba/raw/master/install.ps1 -UseBasicParsing</span><br><span class="line">).Content</span><br></pre></td></tr></table></figure>
+<p>如果执行上面命令报错</p>
+<ol>
+<li>可能是win10脚本执行策略问题，修改可以执行下边命令：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Set-ExecutionPolicy -Scope CurrentUser</span><br></pre></td></tr></table></figure>
+<p>执行后会出ExecutionPolicy:提示信息，输入RemoteSigned，回车确定后在按Y确定执行。</p>
+<p>再执行安装命令即可正常使用</p>
+<ol>
+<li>网络问题：</li>
+</ol>
+<p>需要科学上网</p>
+<p><img src="https://z4a.net/images/2023/03/14/6469bc10396aaa456abe082a57d9bf55.png" alt="img"></p>
+<p>安装成功↑</p>
+<h4 id="管理jdk版本">管理jdk版本</h4>
+<ol>
+<li>添加本地jdk</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jabba link system@1.8 E:\Users\19318\.jdks\corretto-1.8.0_322-1</span><br></pre></td></tr></table></figure>
+<p><img src="https://z4a.net/images/2023/03/14/b8aeccb86baff856913af5345d84af2b.png" alt="img"></p>
+<p>2.查询本地安装的JDK版本</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jabba ls</span><br></pre></td></tr></table></figure>
+<p>3.切换jdk版本</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jabba use system@1.8</span><br></pre></td></tr></table></figure>
+<p><img src="https://z4a.net/images/2023/03/14/d65994093e63d5b9198474374da20763.png" alt="img"></p>
+<p>附：常用命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">jabba ls-remote 查询服务器上可下载的安装的JDK版本</span><br><span class="line">jabba ls 查询本地安装的JDK版本</span><br><span class="line">jabba install openjdk@1.10-0 安装OpenJDK</span><br><span class="line">jabba uninstall zulu@1.6.77 卸载JDK</span><br><span class="line">jabba use adopt@1.8 切换使用的JDK版本</span><br></pre></td></tr></table></figure>
+<h4 id="应用场景和局限性">应用场景和局限性</h4>
+<p>我的需求是将默认版本由17变为8，在尝试了网上的其他办法没有成功后尝试的jabba，但是jabba仅可在管理员身份下的powershell中可以被找到并使用，在普通powershell、普通cmd和管理员cmd中均无法找到或使用jabba，并且默认的jdk版本仍是原来的17，具体原因未知。</p>
+<p>参考文章：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/fortuneju/p/14661923.html">Java使用Jabba进行版本管理</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/26/Vue%E7%9A%84%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="AlwaysXR">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/07/26/Vue%E7%9A%84%E5%AE%89%E8%A3%85/" class="post-title-link" itemprop="url">VUE的安装</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-07-26 20:49:24 / 修改时间：20:54:03" itemprop="dateCreated datePublished" datetime="2023-07-26T20:49:24+08:00">2023-07-26</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>我的版本如下所示</p>
+<p><img src="https://z4a.net/images/2023/03/14/aee4a80c084263211052d9bbcd7d660f.png" alt="img"></p>
+<p>这是以前我的电脑就配置好的，具体怎么装俺也想不起来了，可以上网搜搜其他教程，注意配置环境变量和用户变量噢~</p>
+<h3 id="开始安装">开始安装</h3>
+<p>先贴出来我滴参考文章吧！</p>
+<p>《<a target="_blank" rel="noopener" href="https://blog.csdn.net/thumbs_up_sign_ygj/article/details/104979272">用webstorm搭建vue项目（亲测，绝对实用）</a>》</p>
+<p>大哥写的不错，也包含了安装nodejs和npm的过程，大家可以借鉴一下。下面是我的安装过程</p>
+<ul>
+<li>安装淘宝镜像-cnpm</li>
+</ul>
+<p>这类似与npm的国内镜像源，用它下载会变快一点点~</p>
+<p>安装命令：npm install -g cnpm --registry=<a target="_blank" rel="noopener" href="https://registry.npm.taobao.org">https://registry.npm.taobao.org</a></p>
+<p>验证命令：cnpm -v</p>
+<p>返回如下内容则安装成功</p>
+<p><img src="https://z4a.net/images/2023/03/14/e7c53873a0e02012d761a852d05cd32f.png" alt="img"></p>
+<p>如果你一下就成功了，那我恭喜你。我本人输入验证命令时遇到了报错</p>
+<p>‘cnpm‘ 不是内部或外部命令，也不是可运行的程序 或批处理文件。</p>
+<p>上网找了很久，总结出来报错原因应该是：没有将cnpm的执行路径添加到windows环境变量中</p>
+<p>好，那现在问题就变成了cnpm在哪里执行捏？</p>
+<p>首先，cnpm一般会下载在你安装的nodejs的文件夹下。按照网上的说法，有一些人的cnpm.cmd会在这个↓文件夹下，不知道大家的在不在，反正我是没有</p>
+<p>（注意是cnpm.cmd不是普通的cnpm噢）</p>
+<p><img src="https://z4a.net/images/2023/03/14/35d81428dc25d5929904e26cae7023b6.png" alt="img"></p>
+<p>找了半天我也不知道网上博主们的cnpm.cmd是哪来的，正发愁的时候突然发现他就在前几层的文件夹（node_global）下诶</p>
+<p><img src="https://z4a.net/images/2023/03/14/f21d3db0ca340eae6a971a0d1fc96d76.png" alt="img"></p>
+<p>那现在问题就很简单啦，由于原因是：没有将cnpm的执行路径添加到windows环境变量中，现在我们只需要在用户变量的Path中添加cnpm.cmd所在的路径即可！</p>
+<p><img src="https://z4a.net/images/2023/03/14/64a6f743dd4b6e3d561a5eb8fc398b30.png" alt="img"></p>
+<p>现在，我们再去用验证命令来验证，就会得到正确的结果啦</p>
+<ul>
+<li>安装webpack</li>
+</ul>
+<p>安装命令：cnpm install webpack -g</p>
+<p>验证命令：webpack -v</p>
+<p>如果出现</p>
+<blockquote>
+<p>We will use “npm” to install the CLI via “npm install -D”. Do you want to install ‘webpack-cli’ (yes/no):</p>
+</blockquote>
+<p>直接回车（即默认no，选择yes会报错），然后执行</p>
+<p>npm install webpack-cli -g</p>
+<ul>
+<li>安装Vue</li>
+</ul>
+<p>安装命令：cnpm install vue -g</p>
+<ul>
+<li>安装Vue命令行工具，即vue-cli 脚手架</li>
+</ul>
+<p>安装命令：cnpm install vue-cli -g</p>
+<p>验证命令：vue -V (V要大写！)</p>
+<p><img src="https://z4a.net/images/2023/03/14/4011de0ebd511babbff9d217c6ed65e7.png" alt="img"></p>
+<p>这样我的vue就安装好啦，但是做到这里安装的vue-cli应该是2.9.6版本噢，我后续又进行了更新，下文会写！</p>
+<h3 id="Vue-Cli更新">Vue-Cli更新</h3>
+<p>参考的文章是</p>
+<p>《<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_48736958/article/details/111405591">如何升级Vue的版本 vue2.9.6升级到vue3.0</a>》</p>
+<ul>
+<li>首先卸载老版本vue2.9.6</li>
+</ul>
+<p>执行命令：npm uninstall vue-cli -g</p>
+<ul>
+<li>再安装新的vue</li>
+</ul>
+<p>执行命令：cnpm install -g @vue/cli</p>
+<p>完成！现在再输入vue -V就可以检测到新版本的vue了</p>
+<h3 id="WebStorm创建Vue项目">WebStorm创建Vue项目</h3>
+<p>在新建项目是选择Vue.js即可，系统会自动去寻找电脑中的Node解释器和Vue CLI</p>
+<p><img src="https://z4a.net/images/2023/03/14/069826b004091b7a84f1244f2378f1ec.png" alt="img"></p>
+<p>点击创建，就可以开始创建新项目了。这时我的电脑又报错了。。。</p>
+<blockquote>
+<p>npm ERR! code EPERM<br>
+npm ERR! syscall mkdir<br>
+…</p>
+</blockquote>
+<p>具体啥意思捏？咱也不知道。反正就先把报错信息甩给bing让他搜去吧。</p>
+<p>bing告诉我：《<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42780155/article/details/119025638">npm安装报错（npm ERR! code EPERM npm ERR! syscall mkdir…）</a>》</p>
+<p>文中提到两种方法，抱着能输命令就不找文件的原则，我先试了第二种</p>
+<p>npm cache clean --force</p>
+<p>失败了哈哈哈，提示我不能删除之类的（即使我已经以管理员身份运行）</p>
+<p>然后回过头看第一种，这次倒是根据文章很顺利的找到了.npmrc文件（C:\Users{账户}\下的.npmrc文件），直接delete，再次运行，问题解决（已经删完了没法给大家截图了，莫得办法）</p>
+<p>经过一段时间的等待，WebStorm终于创建好了Vue项目，项目结构如下</p>
+<p><img src="https://z4a.net/images/2023/03/14/f7d0a6dada1a17807ae32ed38c37f3d5.png" alt="img"></p>
+<p>这时候有人就要问了：“你怎么知道你安装的vue版本呢？” 检测vue版本可以在我们的webstorm的终端中输入npm list vue来查看（不在项目下输入可能会报错）</p>
+<p><img src="https://z4a.net/images/2023/03/14/b06fb53bb0ec8b473244f9b1cbef0bcb.png" alt="img"></p>
+<p>也可以在package.json文件中的&quot;dependencies&quot;下查看</p>
+<p><img src="https://z4a.net/images/2023/03/14/b0e7abc115cf309e5d33a36a0ccd0da3.png" alt="img"></p>
+<p>后面再更新Vue的教程~</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/26/Springboot%E9%9B%86%E6%88%90Redis%E5%81%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BC%93%E5%AD%98%EF%BC%88%E5%8E%9F%E7%94%9F%E7%89%88%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="AlwaysXR">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/07/26/Springboot%E9%9B%86%E6%88%90Redis%E5%81%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BC%93%E5%AD%98%EF%BC%88%E5%8E%9F%E7%94%9F%E7%89%88%EF%BC%89/" class="post-title-link" itemprop="url">Springboot集成Redis做数据库缓存（原生版）</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-07-26 20:49:24 / 修改时间：20:53:38" itemprop="dateCreated datePublished" datetime="2023-07-26T20:49:24+08:00">2023-07-26</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1>Springboot集成Redis做数据库缓存（原生版）</h1>
+<p>redis做缓存简单来说就是：系统把表中经常访问的记录放在了Redis中，然后用户查询时先去查询Redis再去查询MySQL，由于缓存在内存中，所以查询会很快，起到提高性能的作用。</p>
+<p>先来看效果吧~</p>
+<p>测试案例是把一个查询重复99999次，根据时间来判断性能的好坏。</p>
+<p>使用redis时：</p>
+<p><img src="https://z4a.net/images/2023/03/14/defac8a67b0d3fa9b16422502e00af87.png" alt="img"></p>
+<p>不使用redis时：</p>
+<p><img src="https://z4a.net/images/2023/03/14/9b779c3fa0fbbdf4d57cfaf678d6233d.png" alt="img"></p>
+<p>可以看出使用redis大概快了两秒钟，确实实现了优化。但是redis可以实现的优化效果作者并不是很了解，这里感觉效果不算特别明显，可能和代码有关系。</p>
+<p>本文所用的方法是原生的redis操作，没有用到springboot自带的缓存机制（不会，下次再更）。本文代码基于<a target="_blank" rel="noopener" href="http://www.alwaysxr777.top:8081/blog/21">之前的文章</a>进行添加，需要源码的同学可以去原文下载。</p>
+<h3 id="maven配置">maven配置</h3>
+<p>添加以下依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-cache<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="application配置">application配置</h3>
+<p>redis默认是没有密码的，所以如果你没有设置密码就不需要写密码啦</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring</span>:<span class="string">redis:host: localhost</span></span><br><span class="line">    <span class="attr">port</span>:<span class="string">6379</span></span><br></pre></td></tr></table></figure>
+<h3 id="Java代码">Java代码</h3>
+<p><img src="https://z4a.net/images/2023/03/14/3ee69ecf2e34a778f4157fcd83c4018f.png" alt="img"></p>
+<ul>
+<li>首先在项目文件夹下新建config文件夹（放配置类）和util文件夹（放工具类）</li>
+<li>在config文件夹下新建RedisConfig类</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableCaching</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisConfig</span> <span class="keyword">extends</span> <span class="title class_">CachingConfigurerSupport</span>&#123;</span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> RedisTemplate redisTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> RedisTemplate <span class="title function_">redisTemplateInit</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="comment">//序列化key的实例化对象</span></span><br><span class="line">        redisTemplate.setKeySerializer(<span class="keyword">new</span> <span class="title class_">StringRedisSerializer</span>());</span><br><span class="line">        <span class="comment">//序列化value的实例化对象</span></span><br><span class="line">        redisTemplate.setValueSerializer(<span class="keyword">new</span> <span class="title class_">GenericJackson2JsonRedisSerializer</span>());</span><br><span class="line">        <span class="keyword">return</span> redisTemplate;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RedisTemplate是<strong>Spring Data Redis提供给用户的最高级的抽象客户端</strong>，用户可直接通过RedisTemplate进行多种操作,例如set、get</p>
+<ul>
+<li>（非必须）可以在config文件夹下新建一个RedisConstant类来存储redis的key</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisConstant</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String USER_KEY=<span class="string">&quot;User&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>到时候使用时直接调用参数即可</p>
+<ul>
+<li>在util文件夹下新建RedisUtil类，里面的内容是封装好的redis操作，网上有很多大佬写的工具类，通用性比较高，找到合适的可以直接拿来用</li>
+</ul>
+<p>我找到的工具类有很多功能，代码比较长，放在文章的最后</p>
+<ul>
+<li>在serverimpl中添加redis的相关代码</li>
+</ul>
+<p>主要逻辑是查询前先在redis中寻找有没有要查找的内容，如果没有再去数据库中查找，数据库返回的值顺便存入redis，这样下次再访问时就可以从redis中读到数据了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserServiceImpl</span> <span class="keyword">implements</span> <span class="title class_">UserService</span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    UserMapper userMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    RedisUtil redisUtil;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    publicList&lt;User&gt; <span class="title function_">queryAll</span><span class="params">()</span>&#123;<span class="comment">//试图从redis获取</span></span><br><span class="line">        List&lt;User&gt; users =(List&lt;User&gt;) redisUtil.get(RedisConstant.USER_KEY);<span class="comment">//获取失败则去数据库查找</span></span><br><span class="line">        <span class="keyword">if</span>(CollectionUtils.isEmpty(users))&#123;</span><br><span class="line">            users=userMapper.queryAll();<span class="comment">//返回的数据存入redis</span></span><br><span class="line">            redisUtil.set(RedisConstant.USER_KEY,users);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> users;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">changePassword</span><span class="params">(String username,String password)</span>&#123;<span class="comment">//为了防止数据不一致，在数据库数据改变时先清楚之前redis的相关缓存</span></span><br><span class="line">        redisUtil.del(RedisConstant.USER_KEY);</span><br><span class="line">        userMapper.changePassword(username,password);</span><br><span class="line">        System.out.println(<span class="string">&quot;修改成功&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码部分就到此结束了~</p>
+<h3 id="运行代码">运行代码</h3>
+<p>首先你的电脑要先启动redis服务器端才可以。</p>
+<p>redis官方是没有Windows版的，不过已经有大佬开发出了Windows版，安装起来比较简单，没什么需要注意的。大家跟着<a target="_blank" rel="noopener" href="https://www.runoob.com/redis/redis-install.html">菜鸟教程</a>先在自己电脑上安装redis吧！</p>
+<p>安装好了，有的同学就要问了，redis现在只能在它自己的目录下运行，这可怎么办捏？</p>
+<p>很简单，我们把redis的路径添加到环境变量中，就可以在任意位置启动redis了</p>
+<p><img src="https://z4a.net/images/2023/03/14/4f4763156c35499d7f339ab7ee356a7c.png" alt="img"></p>
+<p>耗，现在我们打开cmd，输入redis-server，就可以启动redis服务端了（默认的端口6379）</p>
+<p><img src="https://z4a.net/images/2023/03/14/0fff79d0f661c8e77aacce09b1110bb1.png" alt="img"></p>
+<p><strong>不要关闭服务端界面</strong>，再打开一个cmd，输入redis-cli，就可以启动客户端了（默认的端口6379）</p>
+<p><img src="https://z4a.net/images/2023/03/14/c519f3754700ed0cda462ce1ce11a980.png" alt="img"></p>
+<p>现在，来运行我们写好的程序吧</p>
+<p>进入localhost:8084，点击获取，我们会从数据库查到数据，同时把数据存入redis，这时我们在redis客户端就可以查到数据了~</p>
+<p><img src="https://z4a.net/images/2023/03/14/b3c1f4887e4e5548716e4950442dad5f.png" alt="img"></p>
+<p>如果你想不起来你的键叫什么，又不想去看代码，那么查询现在redis中存有的键：keys *</p>
+<p><img src="https://z4a.net/images/2023/03/14/bdc34c4083bc81135b89151994b6d645.png" alt="img"></p>
+<p>现在你可以自己写一个测试用例来看看效果如何了。</p>
+<p>虽然在大项目中redis肯定不是这么用的，但是对于作者来说，起码算是用起来了，后面再学习正确的简洁的使用方式，学会了来给大噶更新！</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1011,736 +1393,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/26/%E7%BB%93%E5%AF%B9%E7%BC%96%E7%A8%8B%E4%BB%A3%E7%A0%81%E4%BA%92%E8%AF%84/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="AlwaysXR">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ALWAYSXR BLOG">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | ALWAYSXR BLOG">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2023/07/26/%E7%BB%93%E5%AF%B9%E7%BC%96%E7%A8%8B%E4%BB%A3%E7%A0%81%E4%BA%92%E8%AF%84/" class="post-title-link" itemprop="url">结对编程代码互评</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2023-07-26 20:49:24 / 修改时间：20:50:50" itemprop="dateCreated datePublished" datetime="2023-07-26T20:49:24+08:00">2023-07-26</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1>结对编程代码互评</h1>
-<p>本次代码评价基于 lyc 同学的中小学数学卷子自动生成程序（个人项目）进行测试、分析和评价。我和lyc同学一起参加过一些比赛，对彼此的代码风格和处理问题的逻辑都比较熟悉，希望这次能从他的代码中得到新的收获。</p>
-<h3 id="代码功能测试">代码功能测试</h3>
-<ol>
-<li>基础功能分析测试</li>
-</ol>
-<p>按照题目给出的用户和常规操作进行测试。</p>
-<p><img src="https://s1.ax1x.com/2023/03/14/pplhPMV.png" alt="img"></p>
-<p>对应的卷子生成在程序所设置的<strong>绝对路径</strong>下，命名符合题目要求。</p>
-<p><img src="https://s1.ax1x.com/2023/03/14/pplhirT.png" alt="img"></p>
-<p>生成试卷进一步增加了难度标题，便于用户分辨，优化了用户体验。生成题目的格式符合规范，各个运算符号添加位置合理，符合题目要求。</p>
-<p><img src="https://s1.ax1x.com/2023/03/14/pplhFqU.png" alt="img"></p>
-<ol>
-<li>随机输入测试</li>
-</ol>
-<p>这部分测试不按照题目给出的格式进行，而是随机输入不符合要求的字符测试程序。可以看到，程序在遇到无法识别的字符串时会提示输入错误，并自动返回输入字符串前的状态，由此保障了程序的安全性和高可用性。</p>
-<p><img src="https://s1.ax1x.com/2023/03/14/pplhAZF.png" alt="img"></p>
-<p>综上，可以看出 lyc 同学代码实现的功能和效果还是非常好的。</p>
-<h3 id="代码分析">代码分析</h3>
-<p>这份代码有四个类：</p>
-<p><img src="https://s1.ax1x.com/2023/03/14/pplhEa4.png" alt="img"></p>
-<p>其中Paper和User是实体类，分别定义了试卷和用户的属性和方法，PaperGenerationSystem是试卷产生系统的工具类，Main是程序的入口。</p>
-<p>下面具体分析每个类的实现和作用</p>
-<h5 id="User">User</h5>
-<p>User类有三个属性：分别是类型，用户名和密码</p>
-<table>
-<thead>
-<tr>
-<th><strong>属性名</strong></th>
-<th><strong>类型</strong></th>
-<th><strong>含义</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>type</td>
-<td>String</td>
-<td>用户此时的生成试卷的类型</td>
-</tr>
-<tr>
-<td>username</td>
-<td>String</td>
-<td>用户名</td>
-</tr>
-<tr>
-<td>password</td>
-<td>String</td>
-<td>密码</td>
-</tr>
-</tbody>
-</table>
-<p>构造方法如下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">User</span><span class="params">(String type, String username, String password)</span> &#123;</span><br><span class="line">  <span class="built_in">this</span>.type = type;</span><br><span class="line">  <span class="built_in">this</span>.username = username;</span><br><span class="line">  <span class="built_in">this</span>.password = password;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其他方法：</p>
-<table>
-<thead>
-<tr>
-<th><strong>方法名</strong></th>
-<th><strong>返回值</strong></th>
-<th><strong>作用</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>getType</td>
-<td>String</td>
-<td>获取用户类型</td>
-</tr>
-<tr>
-<td>setType</td>
-<td>void</td>
-<td>设置用户类型</td>
-</tr>
-<tr>
-<td>getUsername</td>
-<td>String</td>
-<td>获取用户名</td>
-</tr>
-<tr>
-<td>setUsername</td>
-<td>void</td>
-<td>设置用户名</td>
-</tr>
-<tr>
-<td>getPassword</td>
-<td>String</td>
-<td>获取用户密码</td>
-</tr>
-<tr>
-<td>setPassword</td>
-<td>void</td>
-<td>设置用户密码</td>
-</tr>
-</tbody>
-</table>
-<p>总体来说User类设计逻辑清晰，方法得体。</p>
-<h5 id="Paper">Paper</h5>
-<p>Paper类有三个属性：分别是三种难度的运算符号</p>
-<table>
-<thead>
-<tr>
-<th>属性名</th>
-<th><strong>类型</strong></th>
-<th><strong>含义</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>priSign</td>
-<td>String[]</td>
-<td>小学试卷操作符号</td>
-</tr>
-<tr>
-<td>midSign</td>
-<td>String[]</td>
-<td>初中试卷操作符号</td>
-</tr>
-<tr>
-<td>highSign</td>
-<td>String[]</td>
-<td>高中试卷操作符号</td>
-</tr>
-</tbody>
-</table>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> String[] priSign = &#123;<span class="string">&quot;+&quot;</span>, <span class="string">&quot;-&quot;</span>, <span class="string">&quot;*&quot;</span>, <span class="string">&quot;/&quot;</span>&#125;; <span class="comment">// 小学试卷操作符号</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> String[] midSign = &#123;<span class="string">&quot;²&quot;</span>, <span class="string">&quot;√&quot;</span>&#125;; <span class="comment">// 初中试卷操作符号</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> String[] highSign = &#123;<span class="string">&quot;sin&quot;</span>, <span class="string">&quot;cos&quot;</span>, <span class="string">&quot;tan&quot;</span>&#125;; <span class="comment">// 高中试卷操作符号</span></span><br></pre></td></tr></table></figure>
-<p>Paper类只有一个方法，这也是这份代码做的不太好的地方：一个方法过长，即使注释写的比较清楚，也显得繁杂，可读性较低。</p>
-<table>
-<thead>
-<tr>
-<th><strong>方法名</strong></th>
-<th><strong>返回值</strong></th>
-<th><strong>作用</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>makeQuestion</td>
-<td>String</td>
-<td>生成数学题的方法</td>
-</tr>
-</tbody>
-</table>
-<p>生成算式的逻辑是按照算式元素从左到右的顺序，除了必须的操作数和加减乘除等于符号，根据试卷类型和随机数来决定是否插入每个符号元素。这种方式生成逻辑清晰，便于理解，但是生成过程繁杂，算法性能并不是很好。</p>
-<h5 id="PaperGenerationSystem">PaperGenerationSystem</h5>
-<p>PaperGenerationSystem类仅有一个属性，是用户信息的存储链表</p>
-<table>
-<thead>
-<tr>
-<th><strong>属性名</strong></th>
-<th><strong>类型</strong></th>
-<th><strong>含义</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>userMessage</td>
-<td>List</td>
-<td>存储用户信息的链表</td>
-</tr>
-</tbody>
-</table>
-<p>PaperGenerationSystem的方法如下：</p>
-<table>
-<thead>
-<tr>
-<th><strong>方法名</strong></th>
-<th>*<strong>返回值</strong></th>
-<th><strong>作用</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>userInit</td>
-<td>void</td>
-<td>初始化用户信息的链表信息</td>
-</tr>
-<tr>
-<td>generate</td>
-<td>void</td>
-<td>程序的主系统</td>
-</tr>
-<tr>
-<td>PaperGeneration</td>
-<td>void</td>
-<td>试卷生成写入函数</td>
-</tr>
-<tr>
-<td>check</td>
-<td>boolean</td>
-<td>查重函数</td>
-</tr>
-<tr>
-<td>isNumeric</td>
-<td>boolean</td>
-<td>判断是否为数字</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>userInit</li>
-</ul>
-<p>使用链表存储小规模的用户信息，避免了数据库的使用，简化了程序。但是在判断登录时，需要遍历链表来比对用户名和密码，效率较低，可以换成hashmap提高查找效率，同时避免用户重复，进而提升程序的工作效率。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">userInit</span><span class="params">()</span> &#123;</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;小学&quot;</span>, <span class="string">&quot;张三1&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;小学&quot;</span>, <span class="string">&quot;张三2&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;小学&quot;</span>, <span class="string">&quot;张三3&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;初中&quot;</span>, <span class="string">&quot;李四1&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;初中&quot;</span>, <span class="string">&quot;李四2&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;初中&quot;</span>, <span class="string">&quot;李四3&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;高中&quot;</span>, <span class="string">&quot;王五1&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;高中&quot;</span>, <span class="string">&quot;王五2&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line">   userMessage.add(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;高中&quot;</span>, <span class="string">&quot;王五3&quot;</span>, <span class="string">&quot;123&quot;</span>));</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>generate</li>
-</ul>
-<p>是程序的主系统，实现了 用户交互部分 的功能，由于代码过长，只展示部分代码。这个方法同样有代码过长的问题，可以进一步封装来提高代码的可读性。</p>
-<ul>
-<li>
-<ul>
-<li>用户登录</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(<span class="string">&quot;-----欢迎来到中小学数学卷子自动生成系统！-----&quot;</span>);</span><br><span class="line">System.out.println(<span class="string">&quot;## 请输入用户名和密码(两者之间用空格隔开)&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">  <span class="type">Scanner</span> <span class="variable">sc</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(System.in);</span><br><span class="line">  <span class="type">String</span> <span class="variable">str</span> <span class="operator">=</span> sc.nextLine();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!str.contains(<span class="string">&quot; &quot;</span>)) &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;## 输入的账号密码格式不对,请重新输入&quot;</span>);</span><br><span class="line">    <span class="keyword">continue</span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>
-<ul>
-<li>难度切换部分</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(</span><br><span class="line">        <span class="string">&quot;## 当前选择为&quot;</span></span><br><span class="line">            + userMessage.get(index).getType()</span><br><span class="line">            + <span class="string">&quot;出题,请输入生成题目数量(题目数量范围为10~30,输入-1将退出当前用户,重新登录),如需切换出题类型，请输入切换为xx，xx为小学、初中和高中三个选项中的一个&quot;</span>);</span><br><span class="line">    <span class="type">String</span> <span class="variable">command</span> <span class="operator">=</span> sc.nextLine();</span><br><span class="line">    <span class="keyword">if</span> (command.equals(<span class="string">&quot;&quot;</span>)) &#123;</span><br><span class="line">      System.out.println(<span class="string">&quot;请输入内容!&quot;</span>);</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (command.equals(<span class="string">&quot;切换为小学&quot;</span>)) &#123;</span><br><span class="line">      userMessage.get(index).setType(<span class="string">&quot;小学&quot;</span>);</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (command.equals(<span class="string">&quot;切换为初中&quot;</span>)) &#123;</span><br><span class="line">      userMessage.get(index).setType(<span class="string">&quot;初中&quot;</span>);</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (command.equals(<span class="string">&quot;切换为高中&quot;</span>)) &#123;</span><br><span class="line">      userMessage.get(index).setType(<span class="string">&quot;高中&quot;</span>);</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>
-<ul>
-<li>题目生成部分：根据输入是否有数字和数字的范围，来判断是否要生成题目</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (isNumeric(command)) &#123;</span><br><span class="line">  <span class="keyword">if</span> (Integer.valueOf(command) &lt;= <span class="number">30</span> &amp;&amp; Integer.valueOf(command) &gt;= <span class="number">10</span>) &#123;</span><br><span class="line">    PaperGeneration(</span><br><span class="line">      Integer.valueOf(command),</span><br><span class="line">      userMessage.get(index).getType(),</span><br><span class="line">      userMessage.get(index).getUsername());</span><br><span class="line">   System.out.println(<span class="string">&quot;## 试卷生成成功!请在对应包下查看试卷!&quot;</span>);</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">     System.out.println(<span class="string">&quot;## 不满足题目数量，请重新输入&quot;</span>);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>PaperGeneration</li>
-</ul>
-<p>此方法是 试卷生成写入函数，用于</p>
-<ol>
-<li>
-<ol>
-<li>新建用户对应的文件夹和txt文件</li>
-<li>将生成的题目经过查重，加序号处理后写入文件</li>
-</ol>
-</li>
-</ol>
-<p>在程序中，文件使用的是绝对路径，因此会在未经过用户同意的情况下，在用户的电脑的对应路径下产生相应的文件夹，可能会造成用户找不到文件的问题，降低用户的使用体验。</p>
-<p>由于代码过长，只展示部分代码。这个方法同样有代码过长的问题，可以进一步封装来提高代码的可读性。</p>
-<ul>
-<li>
-<ul>
-<li>获取系统时间</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Date</span> <span class="variable">time</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Date</span>();</span><br><span class="line"><span class="type">SimpleDateFormat</span> <span class="variable">df</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SimpleDateFormat</span>(<span class="string">&quot;yyyy-MM-dd-HH-mm-ss&quot;</span>);</span><br><span class="line"><span class="type">String</span> <span class="variable">title</span> <span class="operator">=</span> df.format(time);</span><br></pre></td></tr></table></figure>
-<ul>
-<li>
-<ul>
-<li>生成文件，并将查重后的试题写入文件</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">    <span class="type">String</span> <span class="variable">dirPath</span> <span class="operator">=</span> <span class="string">&quot;D:\\IDEA code\\PaperSystem\\system\\src\\com\\papers\\&quot;</span> + username;</span><br><span class="line">    <span class="type">File</span> <span class="variable">file</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(dirPath);</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (!file.exists()) file.mkdirs();</span><br><span class="line">      <span class="type">String</span> <span class="variable">paperDir</span> <span class="operator">=</span> dirPath + <span class="string">&quot;\\&quot;</span> + title + <span class="string">&quot;.txt&quot;</span>;</span><br><span class="line">      <span class="comment">// 写入文件内容,即试题</span></span><br><span class="line">      <span class="type">File</span> <span class="variable">newPaper</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(paperDir);</span><br><span class="line">      writer = <span class="keyword">new</span> <span class="title class_">FileWriter</span>(newPaper);</span><br><span class="line">      <span class="comment">// 标明是哪种卷子</span></span><br><span class="line">      writer.write(type + <span class="string">&quot;期末考试试卷\r\n\r\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">      <span class="type">int</span> <span class="variable">quesIndex</span> <span class="operator">=</span> <span class="number">1</span>; <span class="comment">// 题目序号</span></span><br><span class="line"></span><br><span class="line">      <span class="comment">// 根据输入的数量开始出题并写入文件</span></span><br><span class="line">      <span class="keyword">while</span> (sum &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">content</span> <span class="operator">=</span> paper.makeQuestion(type);</span><br><span class="line">          <span class="comment">// 试题查重</span></span><br><span class="line">        <span class="keyword">if</span> (check(newPaper, content)) &#123;</span><br><span class="line">          <span class="keyword">if</span> (sum == <span class="number">1</span>) &#123;</span><br><span class="line">            writer.write(quesIndex + <span class="string">&quot;. &quot;</span> + content);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">          &#125;</span><br><span class="line">          writer.write(quesIndex + <span class="string">&quot;. &quot;</span> + content + <span class="string">&quot;\r\n&quot;</span> + <span class="string">&quot;\r\n&quot;</span>);</span><br><span class="line">          sum--;</span><br><span class="line">          quesIndex++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!check(newPaper, content)) &#123;</span><br><span class="line">          System.out.println(content);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">     <span class="comment">// 刷新并关闭FileWriter </span></span><br><span class="line">      writer.flush();</span><br><span class="line">      writer.close();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">      e.printStackTrace();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>check</li>
-</ul>
-<p>此方法负责对题目进行查重，主要思路是遍历用户文件夹下的txt文件，逐个对比题目是否重复。这部分有一个小缺陷</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 只有一张卷子不查重</span></span><br><span class="line"><span class="keyword">if</span> (files.length == <span class="number">1</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我认为在同一张卷子的生成过程中，题目仍需与上面已经生产的题目进行查重处理。</p>
-<ul>
-<li>isNumeric</li>
-</ul>
-<p>此方法的作用是判断输入的字符串是否是数字，如果是数字则可能可以进行题目生成处理。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isNumeric</span><span class="params">(String str)</span> &#123;</span><br><span class="line">  <span class="type">Pattern</span> <span class="variable">pattern</span> <span class="operator">=</span> Pattern.compile(<span class="string">&quot;[0-9]*&quot;</span>);</span><br><span class="line">  <span class="type">Matcher</span> <span class="variable">isNum</span> <span class="operator">=</span> pattern.matcher(str);</span><br><span class="line">  <span class="keyword">if</span> (!isNum.matches()) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="代码评价">代码评价</h3>
-<ul>
-<li>
-<p>优点：</p>
-</li>
-<li>
-<ol>
-<li>这份代码的功能实现十分完备，各个判断和边界考虑的清晰周到。</li>
-<li>类的设计逻辑清晰，易于他人理解。</li>
-<li>程序的文字提示十分完善，便于用户操作。</li>
-<li>属性的安全性较好，在适当的地方采用了private和final关键字进行处理。</li>
-</ol>
-</li>
-<li>
-<p>缺点：</p>
-</li>
-<li>
-<ol>
-<li>方法的封装不够完善，程序整体的可读性偏差。</li>
-<li>存储用户信息用的是链表，查找效率较低，可以采用map或者数据库</li>
-<li>文件生成的路径是绝对路径，单从终端无法得知文件生成在哪里。</li>
-<li>算法相对较为简单，效率较低，期待可以进行优化。</li>
-</ol>
-</li>
-</ul>
-<p>总体上来说，lyc同学编写的程序还是很值得我去学习的，尤其是在用户体验方面的考虑十分周到，向yc大佬低头！</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/26/%E5%9F%BA%E4%BA%8Ezookeeper%E4%B8%B4%E6%97%B6%E9%A1%BA%E5%BA%8F%E8%8A%82%E7%82%B9%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%AE%9E%E7%8E%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="AlwaysXR">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ALWAYSXR BLOG">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | ALWAYSXR BLOG">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2023/07/26/%E5%9F%BA%E4%BA%8Ezookeeper%E4%B8%B4%E6%97%B6%E9%A1%BA%E5%BA%8F%E8%8A%82%E7%82%B9%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%AE%9E%E7%8E%B0/" class="post-title-link" itemprop="url">基于ZooKeeper临时顺序节点的分布式锁实现</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2023-07-26 20:20:14 / 修改时间：20:48:37" itemprop="dateCreated datePublished" datetime="2023-07-26T20:20:14+08:00">2023-07-26</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1>基于ZooKeeper临时顺序节点的分布式锁实现</h1>
-<p>[TOC]</p>
-<h3 id="1-分布式锁">1. 分布式锁</h3>
-<p>分布式锁是一种在分布式系统中协调进程或线程之间对共享资源进行访问控制的机制。在分布式系统中，多个进程或线程同时访问同一个资源时，为了保证数据的一致性和正确性，需要进行同步访问，避免多个进程或线程同时修改同一个资源造成数据的不一致。分布式锁就是为了解决这个问题而产生的。</p>
-<p>在Java多线程中，我们了解过锁，这种锁主要用来控制一个JVM内的多个线程对本地共享资源的访问</p>
-<p><img src="https://z4a.net/images/2023/04/26/imagee2a9933c387e196e.png" alt="本地锁"></p>
-<p>但是在分布式系统中，可能会有运行在不同JVM上的线程来访问同一份资源，这时候本地的锁就无法解决问题了，分布式锁因而诞生。</p>
-<p><img src="https://z4a.net/images/2023/04/26/image344e20e496d3aafc.png" alt="分布式锁"></p>
-<p>一个最基本的分布式锁需要满足：</p>
-<ul>
-<li><strong>互斥</strong> ：任意一个时刻，锁只能被一个线程持有；</li>
-<li><strong>高可用</strong> ：锁服务是高可用的。并且，即使客户端的释放锁的代码逻辑出现问题，锁最终一定还是会被释放，不会影响其他线程对共享资源的访问。</li>
-<li><strong>可重入</strong>：一个节点获取了锁之后，还可以再次获取锁。</li>
-</ul>
-<h3 id="2-ZooKeeper-在Java中的基本使用">2. ZooKeeper 在Java中的基本使用</h3>
-<p>若想在Java中使用ZooKeeper，首先我们还是需要先启动ZooKeeper集群（可以有多个ZooKeeper服务端相连接，一般是奇数个）</p>
-<p><img src="https://z4a.net/images/2023/04/26/image.png" alt=""></p>
-<p>接下来我们就可以通过Java来控制ZooKeeper操作了</p>
-<p>在操作中有一系列参数，这里暂时不一一解释，咱们用到哪说到哪，感兴趣的小伙伴也可以自己去查一查</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//这里是自己导入了ZooKeeper的包</span></span><br><span class="line"><span class="keyword">import</span> org.apache.zookeeper.*;</span><br><span class="line"><span class="keyword">import</span> org.apache.zookeeper.data.Stat;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ZKOper</span> &#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">nodeAdds</span> <span class="operator">=</span> <span class="string">&quot;localhost:2181,localhost:2182,localhost:2183&quot;</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">//新建一个zookeeper连接，超时为 3s，以后对集群的操作，都在 zk 上完成</span></span><br><span class="line">		<span class="type">ZooKeeper</span> <span class="variable">zk</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ZooKeeper</span>(nodeAdds, <span class="number">3000</span>, watchedEvent -&gt; &#123;&#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//新增一个节点</span></span><br><span class="line">		<span class="type">String</span> <span class="variable">seq</span> <span class="operator">=</span> zk.create(<span class="string">&quot;/hnu&quot;</span>, <span class="string">&quot;loginIn&quot;</span>.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,</span><br><span class="line">				CreateMode.PERSISTENT);</span><br><span class="line">		System.out.println(<span class="string">&quot;保存成功，序号：&quot;</span> + seq);</span><br><span class="line">        <span class="comment">//获取节点</span></span><br><span class="line">		<span class="type">byte</span>[] data = zk.getData(<span class="string">&quot;/hnu&quot;</span>,<span class="literal">null</span>,<span class="literal">null</span>);</span><br><span class="line">		<span class="type">String</span> <span class="variable">v</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">String</span>(data);</span><br><span class="line">		System.out.println(<span class="string">&quot;取得节点内的数据&quot;</span> + v);</span><br><span class="line">        <span class="comment">//修改节点信息</span></span><br><span class="line">		<span class="type">Stat</span> <span class="variable">rs</span> <span class="operator">=</span> zk.setData(seq, <span class="string">&quot;loginOut&quot;</span>.getBytes(),-<span class="number">1</span>);</span><br><span class="line">		System.out.println(<span class="string">&quot;修改结果&quot;</span> + rs);</span><br><span class="line">        <span class="comment">//删除节点</span></span><br><span class="line">		zk.delete(seq, -<span class="number">1</span>);</span><br><span class="line">		System.out.println(<span class="string">&quot;删除成功&quot;</span> + seq);</span><br><span class="line">		zk.close();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在输出中，我们就可以观察到程序对ZooKeeper进行的一系列curd操作了</p>
-<h3 id="3-ZooKeeper实现分布式锁的思路">3. ZooKeeper实现分布式锁的思路</h3>
-<p>ZooKeeper实现分布式锁主要依赖它的两种特性：</p>
-<ul>
-<li>Watcher监听机制</li>
-</ul>
-<p>Watcher 监听机制是 ZooKeeper 的客户端与服务端之间的一种通信方式。当客户端与服务端建立连接后，客户端可以注册一个 Watcher 对象，来监听某个节点的变化。当这个节点的状态发生变化时，服务端会向客户端发送一个通知，告诉客户端这个节点的状态已经发生了变化。客户端收到通知后，可以根据需要执行一些操作。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.zookeeper.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ZKWatch</span> &#123;</span><br><span class="line"><span class="comment">//    可用的所有的节点地址，注意格式：</span></span><br><span class="line">     <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">nodeAdds</span> <span class="operator">=</span> <span class="string">&quot;localhost:2181,localhost:2182,localhost:2183&quot;</span>;</span><br><span class="line">     <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">         Watcher watch=<span class="keyword">new</span> <span class="title class_">Watcher</span>()&#123;</span><br><span class="line"><span class="comment">// 创建一个监听器对象</span></span><br><span class="line">             <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">process</span><span class="params">(WatchedEvent e)</span> &#123;</span><br><span class="line">                 System.out.println(<span class="string">&quot;WatchedEvent:&quot;</span>+e.getPath()+<span class="string">&quot; &quot;</span>+e.getType());</span><br><span class="line">                 <span class="keyword">if</span>(e.getType()==Watcher.Event.EventType.NodeDeleted)&#123;</span><br><span class="line">                 System.out.println(<span class="string">&quot; NodeDeleted&quot;</span>);</span><br><span class="line">                 &#125;</span><br><span class="line">                 <span class="keyword">if</span>(e.getType()==Watcher.Event.EventType.NodeCreated)&#123;</span><br><span class="line">                 System.out.println(<span class="string">&quot; NodeCreated&quot;</span>);</span><br><span class="line">                 &#125;</span><br><span class="line">                 <span class="keyword">if</span>(e.getType()==Watcher.Event.EventType.NodeDataChanged)&#123;</span><br><span class="line">                 System.out.println(<span class="string">&quot; NodeDataChanged&quot;</span>);</span><br><span class="line">                 &#125;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;;</span><br><span class="line">         <span class="comment">//将此 watch 对象加给连结对象，此处监听根节点，及其以下所有子节点变化</span></span><br><span class="line">        <span class="comment">// AddWatchMode.PERSISTENT : 只监听指定的 path</span></span><br><span class="line">        <span class="comment">// AddWatchMode.PERSISTENT_RECURSIVE :监听 path 下所有节点</span></span><br><span class="line">        <span class="comment">// 如设为根目录 / 则所有节点的 crud 操作都会响应</span></span><br><span class="line">         <span class="type">ZooKeeper</span> <span class="variable">zk</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ZooKeeper</span>(nodeAdds, <span class="number">3000</span>, watch);</span><br><span class="line">         zk.addWatch(<span class="string">&quot;/&quot;</span>, watch, AddWatchMode.PERSISTENT_RECURSIVE);</span><br><span class="line">         <span class="keyword">while</span>(<span class="literal">true</span>) &#123;</span><br><span class="line">             Thread.sleep(<span class="number">1000</span>); <span class="comment">//暂不退出</span></span><br><span class="line">         &#125;</span><br><span class="line"><span class="comment">// zk.close();</span></span><br><span class="line"><span class="comment">// 关闭连结</span></span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-<p>如果启动了以上程序，再启动curd，该程序就会根据监听到的信息打印了</p>
-<ul>
-<li>临时顺序节点</li>
-</ul>
-<p>ZooKeeper 节点有四种类型：</p>
-<ol>
-<li>
-<p>持久节点（Persistent Node）：创建后一直存在，直到被主动删除。即使创建节点的客户端断开连接，节点依然存在。</p>
-</li>
-<li>
-<p>临时节点（Ephemeral Node）：只在创建它的客户端与 ZooKeeper 之间的连接保持有效时存在。如果客户端与 ZooKeeper 断开连接，那么临时节点也会被删除。</p>
-</li>
-<li>
-<p>持久顺序节点（Persistent Sequential Node）：创建后一直存在，直到被主动删除。与持久节点不同的是，持久顺序节点会根据节点的创建顺序为节点分配一个唯一的编号。这个编号是由 ZooKeeper 保证唯一的。</p>
-</li>
-<li>
-<p>临时顺序节点（Ephemeral Sequential Node）：只在创建它的客户端与 ZooKeeper 之间的连接保持有效时存在。与临时节点不同的是，临时顺序节点也会根据节点的创建顺序为节点分配一个唯一的编号。这个编号是由 ZooKeeper 保证唯一的。如果客户端与 ZooKeeper 断开连接，那么临时顺序节点也会被删除。</p>
-</li>
-</ol>
-<p>临时节点的特征：</p>
-<ul>
-<li>session连接断开就没了</li>
-<li>不能够创建子节点</li>
-<li>不能有同名节点</li>
-<li>监听节点删除和修改的变化</li>
-</ul>
-<p><strong>根据以上两种特性，我们就可以设计出一种分布式锁</strong></p>
-<ol>
-<li>当客户端请求数据时，会在ZooKeeper中建立一个临时顺序节点，这个节点有一个自己的序号</li>
-<li>判断当前序号是否是最小的，如果是则获得分布式锁，可以执行操作</li>
-<li>如果序号不是最小的，监听序号为 当前序号-1 的节点，而后线程进入wait状态，当序号为当前序号-1的节点被删除，则notify，可以开始操作</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.zookeeper.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.Collections;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"><span class="keyword">import</span> java.util.function.DoubleToIntFunction;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ZKShareLock</span> <span class="keyword">extends</span> <span class="title class_">Thread</span>&#123;</span><br><span class="line">    <span class="comment">//抢锁线程（用户进程）内部等待通知器: 在其他用户删除我前面的节点时用</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Object</span> <span class="variable">innerLock</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Object</span>();</span><br><span class="line">    <span class="keyword">private</span> ZooKeeper zconn;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//需要提前创建路径</span></span><br><span class="line">    <span class="keyword">private</span> String basePath=<span class="string">&quot;/ShareLocksTest&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String userPath=basePath+<span class="string">&quot;/User-&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> String cName;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//构造器</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ZKShareLock</span><span class="params">(ZooKeeper zconn, String cName)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.zconn = zconn;</span><br><span class="line">        <span class="built_in">this</span>.cName = cName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">todoSome</span><span class="params">()</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="comment">//耗时操作,模拟用户拿到锁后去做一些事情</span></span><br><span class="line">        <span class="type">Random</span> <span class="variable">ran</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">        <span class="type">int</span> <span class="variable">t</span> <span class="operator">=</span> ran.nextInt(<span class="number">3000</span>)+<span class="number">2000</span>;</span><br><span class="line">        Thread.sleep(t);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//释放锁操作</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">unLock</span><span class="params">(String myPath)</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">					System.out.println(cName + <span class="string">&quot;释放锁&quot;</span> + myPath);</span><br><span class="line">            		<span class="comment">//删除当前节点</span></span><br><span class="line">					zconn.delete(myPath, -<span class="number">1</span>);</span><br><span class="line">            zconn.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//1.建一个自己的临时、顺序节点（CreateMode.EPHEMERAL_SEQUENTIAL）</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">mySeq</span> <span class="operator">=</span> zconn.create(userPath, cName.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);</span><br><span class="line">            System.out.println(cName + <span class="string">&quot; 1-创建顺序临时节点成功：&quot;</span> + mySeq);</span><br><span class="line">            <span class="comment">//2.取地basePath下所有子节点，看是否自己最小</span></span><br><span class="line">            <span class="comment">//取地共享锁路径下所有节点输出</span></span><br><span class="line">            List&lt;String&gt; paths=zconn.getChildren(basePath, <span class="literal">null</span>);</span><br><span class="line">            <span class="comment">//为了排序，只取序号的最后10位</span></span><br><span class="line">            List&lt;String&gt; seqs = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">            <span class="keyword">for</span>(String s:paths) &#123;</span><br><span class="line">                s = s.substring(s.length()-<span class="number">10</span>,s.length());</span><br><span class="line">                seqs.add(s);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//排序</span></span><br><span class="line">            Collections.sort(seqs);</span><br><span class="line">            <span class="comment">//3.取得自己节点所处的排序位置</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">myss</span> <span class="operator">=</span> mySeq.substring(mySeq.length()-<span class="number">10</span>,mySeq.length());</span><br><span class="line">            <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> seqs.indexOf(myss);</span><br><span class="line">            System.out.println(cName + <span class="string">&quot; 2-自己节点所处的排序位置：&quot;</span> + index);</span><br><span class="line">            <span class="comment">//如果自己的节点位置是0，则自己就是第一个获得锁的用户</span></span><br><span class="line">            <span class="keyword">if</span> (index==<span class="number">0</span>)&#123;</span><br><span class="line">                System.out.println(cName + <span class="string">&quot; 3-1 自己节点最小，获得锁&quot;</span>);</span><br><span class="line">                todoSome();</span><br><span class="line">                unLock(userPath+myss);</span><br><span class="line">                System.out.println(cName + <span class="string">&quot; 3-2 执行任务完毕，释放锁&quot;</span>);</span><br><span class="line">                zconn.close();</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//获取当前节点前一节点的序号</span></span><br><span class="line">                <span class="type">String</span> <span class="variable">second</span> <span class="operator">=</span> seqs.get(index - <span class="number">1</span>);</span><br><span class="line">                <span class="type">String</span> <span class="variable">secondPath</span> <span class="operator">=</span> userPath + second;</span><br><span class="line">                System.out.println(cName + <span class="string">&quot; 3- 排位后靠，要等待在路径:&quot;</span> + secondPath);</span><br><span class="line">                <span class="comment">//监听前一节点</span></span><br><span class="line">                addWatcher(secondPath);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    System.out.println(cName + <span class="string">&quot; 3-3 在innerLock上锁定，等待通知事件:&quot;</span>);</span><br><span class="line">                    <span class="comment">//先锁定线程</span></span><br><span class="line">                    <span class="keyword">synchronized</span> (innerLock) &#123;</span><br><span class="line">                        innerLock.wait();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//当前一节点被删除，继续操作</span></span><br><span class="line">                System.out.println(cName + <span class="string">&quot; 3-4 通知事件解除，获得锁&quot;</span>);</span><br><span class="line">                todoSome();</span><br><span class="line">                unLock(userPath + myss);</span><br><span class="line">                zconn.close();</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">addWatcher</span><span class="params">(String secondPath)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="comment">//创建一个监听器对象</span></span><br><span class="line">        <span class="type">Watcher</span> <span class="variable">watcher</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Watcher</span>() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">process</span><span class="params">(WatchedEvent event)</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (event.getType() == Event.EventType.NodeDeleted) &#123;</span><br><span class="line">                    System.out.println(<span class="string">&quot;NodeDeleted&quot;</span>);</span><br><span class="line">                    <span class="comment">//当监听的节点被删除，唤醒监听它的线程</span></span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="keyword">synchronized</span> (innerLock) &#123;</span><br><span class="line">                            innerLock.notify();</span><br><span class="line">                        &#125;</span><br><span class="line">                        System.out.println(cName+<span class="string">&quot;3-2 监听到节点:&quot;</span>+secondPath+<span class="string">&quot;被删除，发出通知&quot;</span>);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment">//设置监听路径</span></span><br><span class="line">        zconn.addWatch(secondPath, watcher,AddWatchMode.PERSISTENT);</span><br><span class="line">        System.out.println(cName+<span class="string">&quot; 3-1 在此路径上加上监听器:&quot;</span>+secondPath);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">nodeAdds</span> <span class="operator">=</span> <span class="string">&quot;localhost:2181,localhost:2182,localhost:2183&quot;</span>;</span><br><span class="line">        <span class="comment">//启动10个线程模拟</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>;i&lt;<span class="number">10</span>;i++)&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="type">ZooKeeper</span> <span class="variable">zconn</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ZooKeeper</span>(nodeAdds, <span class="number">3000</span>, watchedEvent -&gt; &#123;&#125;);</span><br><span class="line">                <span class="type">ZKShareLock</span> <span class="variable">m1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ZKShareLock</span>(zconn,<span class="string">&quot;用户&quot;</span>+i);</span><br><span class="line">                m1.start();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>代码中仍可能存在的问题：</p>
-<p>如果由于网络原因，某个zookeeper客户端提前断开了连接，会导致后续的节点检测到它已被删除，而可能提前解锁进入操作，不过在本地测试环境不太容易出现这种问题。若想在本代码中解决问题，在每次唤醒后再次判断自己是否为当前最小节点也可（有点麻烦）。</p>
-<p>基于临时顺序节点实现分布式锁的大体是这样的，可能在代码实现上会还有一些差异。</p>
-<h3 id="4-两种基于ZooKeeper分布式锁的优缺点">4. 两种基于ZooKeeper分布式锁的优缺点</h3>
-<p>ZooKeeper提供了两种实现分布式锁的方式：基于临时顺序节点和基于临时节点的锁。我们前面所说的都是基于<strong>临时顺序</strong>节点的分布式锁，还有一种是基于<strong>临时</strong>节点的分布式锁。</p>
-<ol>
-<li>基于临时顺序节点的锁</li>
-</ol>
-<p>基于临时顺序节点的锁实现原理是，在ZooKeeper中创建一个临时顺序节点，每个客户端都可以创建这样的节点。当客户端需要获取锁时，它会在指定的ZooKeeper目录下创建一个临时顺序节点，并且获取当前目录下所有的节点列表。然后，它将节点列表排序，并检查自己创建的节点是否是当前节点列表中的第一个节点。如果是，那么它获得了锁，如果不是，那么它会监视比自己小的节点的删除事件，直到这些节点被删除，然后再次尝试获取锁。</p>
-<p>优点：</p>
-<ul>
-<li>能够避免羊群效应（herd effect），即多个客户端同时争抢锁的情况，因为每个客户端都会按顺序获取锁。</li>
-<li>可以保证客户端获取锁的顺序和创建节点的顺序一致，因此可以从一定程度上避免死锁的情况。</li>
-</ul>
-<p>缺点：</p>
-<ul>
-<li>需要频繁创建和删除临时节点，当锁的获取和释放频繁发生时，会对ZooKeeper的性能产生一定影响。</li>
-</ul>
-<ol start="2">
-<li>基于临时节点的锁</li>
-</ol>
-<p>基于临时节点的锁实现原理是，在ZooKeeper中创建一个临时节点，这个节点就是锁的代表。当客户端需要获取锁时，它会在指定的ZooKeeper目录下创建一个临时节点。如果它成功创建了这个节点，那么它就获得了锁，否则它需要等待。当客户端释放锁时，它会删除自己创建的临时节点。</p>
-<p>优点：</p>
-<ul>
-<li>由于每个客户端只创建一个节点，因此可以减少ZooKeeper的负载，对性能的影响比较小。</li>
-<li>可以避免由于客户端崩溃或网络故障导致锁无法释放的问题。</li>
-</ul>
-<p>缺点：</p>
-<ul>
-<li>存在羊群效应，当多个客户端同时争抢锁的情况时，可能会导致大量的客户端同时请求ZooKeeper，影响性能。</li>
-<li>无法保证客户端获取锁的顺序，因此可能会出现死锁的情况。</li>
-</ul>
-<p>如果应用场景中锁的获取和释放频率较低，且需要保证锁的可靠性，那么基于临时节点的锁更为合适；如果应用场景中锁的获取和释放频率较高，且需要保证客户端获取锁的顺序和避免死锁的情况，那么基于临时顺序节点的锁更为合适。</p>
-<p>本文参考：</p>
-<p>​		JavaGuide、CSDN、ChatGPT</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/26/Flink%E5%BC%95%E6%93%8E/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="AlwaysXR">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ALWAYSXR BLOG">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | ALWAYSXR BLOG">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2023/07/26/Flink%E5%BC%95%E6%93%8E/" class="post-title-link" itemprop="url">Flink引擎</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2023-07-26 20:19:54 / 修改时间：20:46:58" itemprop="dateCreated datePublished" datetime="2023-07-26T20:19:54+08:00">2023-07-26</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1>Flink引擎</h1>
-<h3 id="Flink概述">Flink概述</h3>
-<ul>
-<li><strong>什么是大数据</strong></li>
-</ul>
-<p>指无法在一定时间内用常规软件工具对其进行获取、存储、管理和处理的数据集合。</p>
-<p><strong>批计算和流计算的区别</strong></p>
-<p><img src="https://s1.ax1x.com/2023/03/14/pplhwsf.png" alt="img"></p>
-<ul>
-<li><strong>为什么需要流计算</strong></li>
-</ul>
-<p>大数据的实时性带来价值更大，eg：实时推荐、数据监控</p>
-<ul>
-<li>
-<p><strong>Flink的特点</strong></p>
-</li>
-<li>
-<ul>
-<li>Exactly-Once</li>
-<li>高吞吐低延迟，实时快速</li>
-<li>高容错</li>
-<li>流批一体</li>
-<li>Streaming/Batch SQL</li>
-</ul>
-</li>
-</ul>
-<h3 id="Flink整体框架">Flink整体框架</h3>
-<p><img src="https://s1.ax1x.com/2023/03/14/pplh0L8.png" alt="img"></p>
-<ul>
-<li>
-<p><strong>Flink 分层框架</strong></p>
-</li>
-<li>
-<ul>
-<li>SDK层：支持SQL/Table、DataStream(java)、Python</li>
-</ul>
-</li>
-</ul>
-<p><img src="https://z4a.net/images/2023/03/14/08b39536f31c3080bd732f6d543638c6.png" alt="img"></p>
-<ul>
-<li>
-<ul>
-<li>执行引擎层：提供统一DAG（有向无环图）来描述数据处理的Pipeline；调度层再把DAG转化成分布式环境下的Task；Task之间通过Shuffle传输数据</li>
-</ul>
-</li>
-</ul>
-<p><img src="https://z4a.net/images/2023/03/14/f13514f7074d8f05c22c6bd13a6f657e.png" alt="img"></p>
-<ul>
-<li>
-<ul>
-<li>状态存储层：存储算子状态信息</li>
-</ul>
-</li>
-</ul>
-<p><img src="https://z4a.net/images/2023/03/14/32c07bf8e187277ac186c491adad0857.png" alt="img"></p>
-<ul>
-<li>
-<ul>
-<li>资源调度层：Flink可以支持部署在多种环境</li>
-</ul>
-</li>
-</ul>
-<p><img src="https://z4a.net/images/2023/03/14/f8a48487d0880985121fe05a816a4ca6.png" alt="img"></p>
-<ul>
-<li>Flink 整体框架</li>
-</ul>
-<p>一个Flink集群主要包含两个核心组件：JM（JobManager）、TM（TaskManager）</p>
-<ul>
-<li>
-<p>JM 负责整个任务的协调工作，包括：调度 task、触发协调 Task 做 Checkpoint、协调容错恢复等，核心有下面三个组件：</p>
-</li>
-<li>
-<ul>
-<li>Dispatcher: 接收作业，拉起 JobManager 来执行作业，并在 Job Master 挂掉之后恢复作业；</li>
-<li>Job Master: 管理一个 job 的整个生命周期，会向 Resource Manager 申请 slot，并将 task 调度到对应 TM 上；</li>
-<li>Resource Manager：负责 slot 资源的管理和调度，Task manager 拉起之后会向 RM 注册；</li>
-</ul>
-</li>
-<li>
-<p>TM 负责执行一个 DataFlow Graph 的各个 task 以及 data streams 的 buffer 和数据交换。</p>
-</li>
-</ul>
-<p><img src="https://z4a.net/images/2023/03/14/1aa99a3902e600d7daa34650ae46f5e8.png" alt="img"></p>
-<h3 id="Flink-如何做到流批一体">Flink 如何做到流批一体</h3>
-<ul>
-<li>
-<p>流计算和批计算独立情况下：</p>
-</li>
-<li>
-<ul>
-<li>人力成本高：批、流两套系统的逻辑相似，但是需要开发两遍；</li>
-<li>数据链路冗余：本身计算内容是一致的，用两套逻辑相似的链路来处理，产生一定的资源浪费；</li>
-<li>数据口径不一致：两套链路或多或少会产生误差，会给业务方带来困扰。</li>
-</ul>
-</li>
-<li>
-<p>为什么可以实现流批一体：</p>
-</li>
-<li>
-<ul>
-<li>站在 Flink 的角度，Everything is Streams，无边界数据集是一种数据流，可以按照时间分成一个个有界数据集；</li>
-<li>而批计算可以看作是流计算的特例，其有界数据集也是一种特殊数据流。</li>
-<li>因此，无论是无边界数据集还是有界数据集，Flink都可以支持，并且从API到底层处理都是统一的，实现了流批一体。</li>
-</ul>
-</li>
-<li>
-<p>流批一体的 Scheduler 层</p>
-</li>
-<li>
-<ul>
-<li>Scheduler 主要负责将作业的 DAG 转化为在分布式环境中可以执行的 Task；</li>
-<li>EAGER模式（Streaming 场景）：申请一个作业所需要的全部资源，然后同时调度这个作业的全部 Task，所有的 Task 之间采取 Pipeline 的方式进行通信；</li>
-<li>LAZY模式（Batch 场景）：先调度上游，等待上游产生数据或结束后再调度下游，类似 Spark 的 Stage 执行模式。</li>
-</ul>
-</li>
-<li>
-<p>流批一体的 Shuffle Service 层</p>
-</li>
-<li>
-<ul>
-<li>Shuffle：在分布式计算中，用来连接上下游数据交互的过程叫做 Shuffle。</li>
-<li>为了统一在Streaming和Batch模式下的Shuffle架构，Flink实现了一个Pluggable的Shuffle Service框架，抽象出一些公共模块，详情如下</li>
-</ul>
-</li>
-</ul>
-<p><img src="https://z4a.net/images/2023/03/14/52eaef3d1fbe530325958d8bcf6f13ed.png" alt="img"></p>
-<p>经过在 DataStream 层、Scheduler层、Shuffle Service 层进行改造和优化，Flink已经可以方便地解决流和批场景的问题。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>

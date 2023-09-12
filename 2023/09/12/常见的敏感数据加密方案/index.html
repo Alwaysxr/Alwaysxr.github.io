@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.17.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="常见的敏感数据加密方案 招联内部分享资料 常见的加密手段   网络层加密 通常用于保障数据再网络传输时的安全   硬件层加密 数据的存储设备提供加密，例如硬盘加密   磁盘加密 通过在磁盘读写时对磁盘扇区进行加解密来实现，避免文件的读写，避免了与应用程序相关的限制   文件加密 通过堆叠在其他文件系统之上（如Ext2，Ext3，ReiserFS，JFS等）。最新型应用是”透明加解密“，主要是通过建">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ALWAYSXR BLOG">
+<meta property="og:url" content="http://example.com/2023/09/12/%E5%B8%B8%E8%A7%81%E7%9A%84%E6%95%8F%E6%84%9F%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86%E6%96%B9%E6%A1%88/index.html">
+<meta property="og:site_name" content="ALWAYSXR BLOG">
+<meta property="og:description" content="常见的敏感数据加密方案 招联内部分享资料 常见的加密手段   网络层加密 通常用于保障数据再网络传输时的安全   硬件层加密 数据的存储设备提供加密，例如硬盘加密   磁盘加密 通过在磁盘读写时对磁盘扇区进行加解密来实现，避免文件的读写，避免了与应用程序相关的限制   文件加密 通过堆叠在其他文件系统之上（如Ext2，Ext3，ReiserFS，JFS等）。最新型应用是”透明加解密“，主要是通过建">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z4a.net/images/2023/09/12/image-20230811091247482.png">
+<meta property="og:image" content="https://z4a.net/images/2023/09/12/8ffb939edabe60ecfb319225e1efde48.png">
+<meta property="og:image" content="https://z4a.net/images/2023/09/12/4dba650cdc025f2b23c00fef561566f4.png">
+<meta property="og:image" content="https://z4a.net/images/2023/09/12/image-20230811094115460.png">
+<meta property="article:published_time" content="2023-09-12T03:49:37.883Z">
+<meta property="article:modified_time" content="2023-09-12T03:59:40.460Z">
+<meta property="article:author" content="AlwaysXR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z4a.net/images/2023/09/12/image-20230811091247482.png">
+
+
+<link rel="canonical" href="http://example.com/2023/09/12/%E5%B8%B8%E8%A7%81%E7%9A%84%E6%95%8F%E6%84%9F%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86%E6%96%B9%E6%A1%88/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/09/12/%E5%B8%B8%E8%A7%81%E7%9A%84%E6%95%8F%E6%84%9F%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86%E6%96%B9%E6%A1%88/","path":"2023/09/12/常见的敏感数据加密方案/","title":""}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title> | ALWAYSXR BLOG</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="ALWAYSXR BLOG" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">ALWAYSXR BLOG</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">WELCOME</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">常见的敏感数据加密方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%8A%A0%E5%AF%86%E6%89%8B%E6%AE%B5"><span class="nav-number">1.0.1.</span> <span class="nav-text">常见的加密手段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95"><span class="nav-number">1.0.2.</span> <span class="nav-text">常见的加密算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.0.3.</span> <span class="nav-text">实践</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">AlwaysXR</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/09/12/%E5%B8%B8%E8%A7%81%E7%9A%84%E6%95%8F%E6%84%9F%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86%E6%96%B9%E6%A1%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="AlwaysXR">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-09-12 11:49:37 / 修改时间：11:59:40" itemprop="dateCreated datePublished" datetime="2023-09-12T11:49:37+08:00">2023-09-12</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1>常见的敏感数据加密方案</h1>
+<p>招联内部分享资料</p>
+<h3 id="常见的加密手段">常见的加密手段</h3>
+<ol>
+<li>
+<p>网络层加密</p>
+<p>通常用于保障数据再网络传输时的安全</p>
+</li>
+<li>
+<p>硬件层加密</p>
+<p>数据的存储设备提供加密，例如硬盘加密</p>
+</li>
+<li>
+<p>磁盘加密</p>
+<p>通过在磁盘读写时对磁盘扇区进行加解密来实现，避免文件的读写，避免了与应用程序相关的限制</p>
+</li>
+<li>
+<p>文件加密</p>
+<p>通过堆叠在其他文件系统之上（如Ext2，Ext3，ReiserFS，JFS等）。最新型应用是”透明加解密“，主要是通过建立应用程序的进程和相应文件之间的关联来达到对特定文件的加解密的目的，通常在操作系统底层对文件进行处理，其加解密过程对用户透明。但是，由于该技术的实现机制所限，决定了文件是否加密主要取决于应用程序和文件的关联关系，这导致安全系统与应用程序的具体实现密切相关，对于用户环境的兼容性较差，针织有可能出现数据被破坏的情况</p>
+</li>
+<li>
+<p>数据库加密-TDE</p>
+<p>数据库提供的一种加密技术，即对数据文件执行实时I/O加密和解密。数据在写入磁盘之前进行加密，从磁盘读入内存时进行解密。TDE不会增加数据文件的大小，开发人员无需更改任何应用程序。其对应密钥管理也是由数据库提供的API或组件实现，应用透明。在某些场景下磁盘或系统无法对用户开放（如云环境）的条件下，这种方式就比较合适</p>
+</li>
+<li>
+<p>应用层加密</p>
+<p>可以说是一种终极方案，其可保证在数据到达数据库之前，就已经做了加密处理，可实时保护用户敏感数据。这里关键需要提供应用透明性，保证应用无需改造或仅需要少量改造。这种方式完全由用户自己控制，无需信任任何三方厂商提供的数据安全保障，得到充分的自由度和灵活性。</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>安全风险</th>
+<th>磁盘加密</th>
+<th>文件加密</th>
+<th>数据库加密</th>
+<th>应用层加密</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>防止磁盘丢失引起数据泄露</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>防止系统root账户和管理员账户访问</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>控制数据库管理员访问数据</td>
+<td>×</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>抵抗APT（定向威胁攻击）造成数据泄露</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>确保备份数据和数据快照加密存储</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>非结构化数据和文件的保护</td>
+<td>√</td>
+<td>√</td>
+<td>×</td>
+<td>√</td>
+</tr>
+<tr>
+<td>防止硬件和数据库厂商偷窥</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>​							部署复杂度</p>
+<p>-----------------------------------------------------------------&gt;&gt;&gt;</p>
+<p>应用层加密  数据库加密  文件层加密  存储层加密</p>
+<p>&lt;&lt;&lt;-----------------------------------------------------------------</p>
+<p>​							数据安全性</p>
+</blockquote>
+<h3 id="常见的加密算法">常见的加密算法</h3>
+<ol>
+<li>
+<p>散列函数（散列函数、哈希函数）</p>
+<p>把消息或数据压缩成摘要，使得数据量变小，使数据的格式固定成特定长度的值，没有解密过程。</p>
+<p>散列结果不可逆，常用于校验数据是否完整等</p>
+<p>常见算法：MD5、SHA-256等</p>
+</li>
+<li>
+<p>对称加密</p>
+<p>只有一个密钥，加密解密都用它。要求加解密双方事先知道加密的密钥。</p>
+<p>优点：算法公开，计算量小，加密速度快，效率高</p>
+<p>缺点：密钥泄露数据就会被破解</p>
+<p>常见算法：</p>
+<p>​	DES：数据加密标准，速度较快，适用于加密大量数据的场合</p>
+<p>​	3DES：基于DES用三组不同密钥对一块数据进行三次加密，安全性更高</p>
+<p>​	AES：高级加密标准，是下一代加密算法标准，速度快，安全级别高，支持128、192、256位密钥的加密</p>
+</li>
+<li>
+<p>非对称加密</p>
+<p>有公钥和私钥，二者配对生成</p>
+<p>优点：算法强度复杂、安全性高</p>
+<p>缺点：加解密速度没有对称加密算法快</p>
+<p>常见算法：</p>
+<p>​	RSA：基于大整数分解难的问题提出。速度比同样安全级别的对称密码算法要慢1000倍。常用1024、2048位密钥加解密</p>
+<p>​	ECC：基于椭圆曲线上的离散对数计算问题提出，在数学上更难，但是计算更快。常用256位</p>
+<p>ECC和RSA相比在许多方面有优势：</p>
+<ul>
+<li>抗攻击型强</li>
+<li>CPU占用少</li>
+<li>内容使用少</li>
+<li>网络消耗低</li>
+<li>加密速度快</li>
+<li>随安全等级提升RSA密钥长度指数级增长，而ECC是线性增长</li>
+</ul>
+<p>已经证明，3072bit的RSA  和  283bit的ECC  和  128bit的对称密码的  <strong>算法强度相当</strong></p>
+</li>
+</ol>
+<h3 id="实践">实践</h3>
+<p>密码管理系统KMS</p>
+<ul>
+<li>密钥管理（包括第三方密钥导入、托管）</li>
+<li>数据库密码管理</li>
+<li>身份证手机号银行卡号等敏感信息加密（身份证号、手机号、银行卡号等敏感信息不允许明文落库）</li>
+<li>密码信息管理（业务系统中，无感获取和使用）</li>
+<li>证书管理</li>
+</ul>
+<p><strong>kms应用架构</strong></p>
+<p>持续部署对kms的单项依赖，并由持续部署实现密钥文件的注入</p>
+<p><img src="https://z4a.net/images/2023/09/12/image-20230811091247482.png" alt="image-20230811091247482"></p>
+<p><strong>客户端是如何获得和使用密钥的</strong></p>
+<p><img src="https://z4a.net/images/2023/09/12/8ffb939edabe60ecfb319225e1efde48.png" alt="img"></p>
+<p><strong>密钥是如何生成的</strong></p>
+<p>密钥的分层结构：数据加密密钥 (工作密),密钥加密密钥,根密钥。下层密钥为上策密钥体提供保护</p>
+<p>数据加密密钥：工作密钥对本地保存的敏感数据和需要在不安全信道上传输的数据提供机密性、完整性保护，还可提供认证和签名等密码学服务。工作密钥直接被上层应用程序所使用，包括存储加密使用的密钥、预共享密钥、MAC密钥、签名私钥等</p>
+<p>密钥加密密钥：对工作密钥提供机密性保护的密钥，其自身受到根密钥的保护</p>
+<p>根密钥：位于密钥管理分层结构的最底端，用于对上层密钥 (如密钥加密密钥)</p>
+<p><img src="https://z4a.net/images/2023/09/12/4dba650cdc025f2b23c00fef561566f4.png" alt="img"></p>
+<p><strong>实现信息加密的流程</strong>（密钥是如何使用的）</p>
+<p><img src="https://z4a.net/images/2023/09/12/image-20230811094115460.png" alt="image-20230811094115460"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/09/12/CompletableFuture%E5%85%A5%E9%97%A8/" rel="prev" title="">
+                  <i class="fa fa-angle-left"></i> 
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/09/12/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%8E%E5%BA%94%E7%94%A8/" rel="next" title="">
+                   <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">AlwaysXR</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -114,7 +114,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">23</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -132,6 +132,720 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/09/12/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%8E%E5%BA%94%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="AlwaysXR">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/09/12/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%8E%E5%BA%94%E7%94%A8/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-09-12 11:49:53 / 修改时间：11:57:55" itemprop="dateCreated datePublished" datetime="2023-09-12T11:49:53+08:00">2023-09-12</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1>分布式锁的实现与应用</h1>
+<h3 id="为什么需要锁">为什么需要锁</h3>
+<p>在多任务环境下解决并发场景的数据竞争问题</p>
+<h3 id="Java常见锁">Java常见锁</h3>
+<p>我们可以根据锁是否包含某一特性来进行分组归类</p>
+<ul>
+<li>从线程是否对资源加锁，可以将锁分为乐观锁和悲观锁</li>
+<li>从资源已被锁定时，线程是否阻塞，可以分为自旋锁（JUC下的atomic家族）和阻塞锁（synchronized、ReentrantLock）</li>
+<li>从多个线程并发访问资源，可以分为无锁、偏向锁、轻量级锁和重量级锁（jdk1.6开始进行锁优化）</li>
+<li>从锁的公平性进行区分，分为公平锁和非公平锁</li>
+<li>从锁是否可以重复获取可以分为可重入锁和不可重入锁</li>
+<li>从多线程能否获得同一把锁分为共享锁和排他锁</li>
+</ul>
+<p><img src="https://z4a.net/images/2023/09/12/8a7064d4a8a581069b04407cb747b701.png" alt="img"></p>
+<h3 id="为什么需要分布式锁">为什么需要分布式锁</h3>
+<p>在单机应用的环境下，所有线程运行在同一个jvm进程中，使用Java中自带的锁足以控制并发；但是在分布式场景下，多个线程运行在不同的机器（jvm进程）上，就需要分布式锁来解决问题了</p>
+<h3 id="什么是分布式锁">什么是分布式锁</h3>
+<p>分布式锁是控制分布式系统不同进程并发访问共享资源的一种锁的实现。如果不同主机之间共享了某个临界资源（例如数据库中的数据），往往需要互斥来防止彼此干扰，以保证一致性。</p>
+<p>作用：分布式集群中多个服务请求同一方法或者同一个业务操作（比如秒杀）的情况下，对应的业务逻辑只能被一台机器上的一个线程执行，避免出现并发安全问题。</p>
+<h3 id="基于数据库实现的分布式锁">基于数据库实现的分布式锁</h3>
+<p>利用<code>select...for update</code>，数据库行锁来实现悲观锁。注意：如果查询条件用了<strong>索引/主键</strong>，那么select … for update就会进行<strong>行锁</strong>；如果是普通字段(没有索引/主键)，那么select … for update就会进行锁表。</p>
+<h4 id="悲观锁实现">悲观锁实现</h4>
+<p>获取锁方法需要声明事务，加数据行锁，事务结束则释放行锁，释放锁的操作应放在finally中</p>
+<p>伪代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//整体流程</span></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">if</span>(lock(keyResource))&#123;<span class="comment">//加锁</span></span><br><span class="line">        process();<span class="comment">//业务逻辑处理</span></span><br><span class="line">     &#125;</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    unlock(keyResource);<span class="comment">//释放</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//锁方法实现</span></span><br><span class="line"><span class="comment">//获取锁</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">lock</span><span class="params">(String keyResource)</span>&#123;</span><br><span class="line">    resLock = <span class="string">&#x27;select * from resource_lock where key_resource = &#x27;</span>#&#123;keySource&#125;<span class="string">&#x27; for update&#x27;</span>;</span><br><span class="line">    <span class="keyword">if</span>(resLock != <span class="literal">null</span> &amp;&amp; resLock.getLockFlag == <span class="number">1</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    resLock.setLockFlag(<span class="number">1</span>);<span class="comment">//上锁</span></span><br><span class="line">    insertOrUpdate(resLock);<span class="comment">//提交</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//释放锁</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">unlock</span><span class="params">(String keyResource)</span>&#123;</span><br><span class="line">    resourceLock.setLockFlag(<span class="number">0</span>);<span class="comment">//解锁</span></span><br><span class="line">    update(resourceLock);<span class="comment">//提交</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="乐观锁实现">乐观锁实现</h4>
+<p>基于CAS思想，在数据库表中添加version字段。</p>
+<p>使用时，带着条件去更新(判断version)</p>
+<p>mybatis-plus已支持自动配置</p>
+<h4 id="特点">特点</h4>
+<ol>
+<li>由于数据库本身的性能瓶颈，基于数据库实现的分布式锁主要应用于并发不高的场景</li>
+<li>实习方式简单，稳定可靠</li>
+</ol>
+<h3 id="基于Redis实现的分布式锁">基于Redis实现的分布式锁</h3>
+<h4 id="原始方案">原始方案</h4>
+<p>使用<code>SETNX</code>命令，<code>SETNX</code> 即 <strong>SET</strong> if <strong>N</strong>ot e<strong>X</strong>ists (对应 Java 中的 <code>setIfAbsent</code> 方法)，如果 key 不存在的话，才会设置 key 的值，返回1。如果 key 已经存在， <code>SETNX</code> 啥也不做，返回0。</p>
+<p><code>expire KEY seconds</code>设置key的过期时间，如果key已过期，将会被自动删除。</p>
+<p><code>del KEY</code>删除key</p>
+<p>伪代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//setnx加锁</span></span><br><span class="line"><span class="keyword">if</span>(jedis.setnx(key,lock_value) == <span class="number">1</span>)&#123;</span><br><span class="line">    <span class="comment">//设定锁过期时间</span></span><br><span class="line">    expire(key,<span class="number">10</span>);</span><br><span class="line">    <span class="keyword">try</span>&#123;</span><br><span class="line">        <span class="comment">//业务处理</span></span><br><span class="line">        <span class="keyword">do</span>();</span><br><span class="line">    &#125; <span class="keyword">catch</span>()&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">        <span class="comment">//释放锁</span></span><br><span class="line">        jedis.del(key);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这个原始方案中，setnx和expire是两个分开的操作而不是<strong>原子操作</strong>。如果执行完setnx操作后，在执行expire设置过期时间之前进程挂了，那这个锁就无法释放，其他线程也获取不到锁了。</p>
+<h4 id="SET拓展命令（Redis2-6-12版本之后）">SET拓展命令（Redis2.6.12版本之后）</h4>
+<p>使用redis拓展命令<code>SET key value[EX seconds][PX milliseconds][NX|XX]</code></p>
+<p>其中各个参数的含义如下：</p>
+<ul>
+<li><code>key</code>: 要设置的键名。</li>
+<li><code>value</code>: 要设置的值。</li>
+<li><code>EX seconds</code>: 可选参数，表示设置键的过期时间（以秒为单位）。</li>
+<li><code>PX milliseconds</code>: 可选参数，表示设置键的过期时间（以毫秒为单位）。</li>
+<li><code>NX</code>: 可选参数，表示只在键不存在时才设置值。</li>
+<li><code>XX</code>: 可选参数，表示只在键已经存在时才设置值。</li>
+</ul>
+<p>举例如下：</p>
+<ul>
+<li>设置一个键值对，不带任何选项：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> username alice</span><br></pre></td></tr></table></figure>
+<p>这将设置键名为 “username” 的值为 “alice”。</p>
+<ul>
+<li>设置一个带有过期时间的键值对：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> session_token <span class="number">123456</span> EX <span class="number">3600</span></span><br></pre></td></tr></table></figure>
+<p>这将设置键名为 “session_token” 的值为 “123456”，并且该键将在 3600 秒（1 小时）后过期。</p>
+<ul>
+<li>设置一个带有过期时间的键值对（以毫秒为单位）：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> cache_key data123 PX <span class="number">5000</span></span><br></pre></td></tr></table></figure>
+<p>这将设置键名为 “cache_key” 的值为 “data123”，并且该键将在 5000 毫秒（5 秒）后过期。</p>
+<ul>
+<li>只在键不存在时设置值：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> order_status pending NX</span><br></pre></td></tr></table></figure>
+<p>如果键名 “order_status” 不存在，那么它将被设置为 “pending”。如果键名已经存在，则不进行任何操作。</p>
+<ul>
+<li>只在键已经存在时设置值：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> login_attempts <span class="number">3</span> XX</span><br></pre></td></tr></table></figure>
+<p>如果键名 “login_attempts” 已经存在，它的值将被设置为 “3”。如果键名不存在，则不进行任何操作。</p>
+<p><strong>了解完这条命令，我们就可以用它来构建分布式锁了</strong></p>
+<p>伪代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(jedis.set(key,lock_value,<span class="string">&quot;NX&quot;</span>,<span class="string">&quot;EX&quot;</span>,10s) == <span class="number">1</span>)&#123;</span><br><span class="line">    <span class="keyword">try</span>&#123;</span><br><span class="line">        <span class="keyword">do</span>();</span><br><span class="line">    &#125;<span class="keyword">catch</span>()&#123;</span><br><span class="line">  </span><br><span class="line">    &#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">        jedis.del(key);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种操作保证了set和expire的原子性，但是仍有其他问题：</p>
+<ol>
+<li>锁过期释放了，但是业务还没有执行完（后续会提到解决方法：看门狗机制）</li>
+<li>锁被其他线程误删（后续会提到解决方法：Lua脚本）：线程1的锁过期释放后，被其他线程（线程2）获取，但是之前的线程（线程1）在执行结束后又del了锁（即释放了线程2的锁），在高并发情况下这种场景等同于没有加锁</li>
+</ol>
+<h4 id="锁误删问题">锁误删问题</h4>
+<p>有的同学就要问了，既然锁可以被其他线程误删，那我们给他加一个唯一标识可以吗？总的来说思路上是没有问题的，但是不能简单的在Java中进行处理</p>
+<p>如果我们在Java中进行判断，伪代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//加锁时设置一个随机id来作为标识，如果释放锁时还是这个id即证明释放了自己的锁（实际上是有逻辑错误的）</span></span><br><span class="line"><span class="keyword">if</span>(jedis.set(key,randomId,<span class="string">&quot;NX&quot;</span>,<span class="string">&quot;EX&quot;</span>,10s) == <span class="number">1</span>)&#123;</span><br><span class="line">    <span class="keyword">try</span>&#123;</span><br><span class="line">        <span class="keyword">do</span>();</span><br><span class="line">    &#125;<span class="keyword">catch</span>()&#123;</span><br><span class="line">  </span><br><span class="line">    &#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">        <span class="comment">//从redis获取randomId，如果是期望值则释放</span></span><br><span class="line">        <span class="keyword">if</span>(randomId.equals(jedis.get(key)))&#123;</span><br><span class="line">        	jedis.del(key);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看起来好像没什么问题，但是这里又会出现<strong>不是原子操作导致</strong>的问题：如果在刚判断完randomId是期望值后，锁过期了，第二个线程创建了自己的锁，这时由于第一个线程已经通过了randomId的判断，那么它还是会释放线程二刚刚创建的锁，锁误删的问题仍然存在…</p>
+<p>好消息是，我们还有其他解决方案。</p>
+<p>在redis 2.6版本后，允许开发者使用Lua编写脚本来传到redis执行，这样做的好处如下：</p>
+<ol>
+<li>减少网络开销：本来多次网络请求的操作，可以用一个请求完成，原先多次请求的逻辑放在redis服务器上完成。使用脚本，减少了网络往返时延；</li>
+<li>原子操作：Redis会将整个脚本作为一个整体执行，中间不会被其他命令插入/打断；</li>
+<li>替代redis的事务功能：Redis的lua脚本几乎实现了常规的事务功能，支持报错回滚操作，官方推荐如果要用redis事务功能可以用redis lua脚本替代。</li>
+</ol>
+<p><strong>Redis Eval 命令基本语法如下</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">EVAL script numkeys key [key ...] arg [arg ...] </span><br><span class="line"></span><br><span class="line"><span class="comment">#实例			   eval  引号中是脚本内容                         key的个数 key[...]  arg[...]  </span></span><br><span class="line">127.0.0.1:6379&gt; <span class="built_in">eval</span> <span class="string">&quot;return &#123;KEYS[1],KEYS[2],ARGV[1],ARGV[2]&#125;&quot;</span> 2 username age jack 20</span><br><span class="line">1) <span class="string">&quot;username&quot;</span></span><br><span class="line">2) <span class="string">&quot;age&quot;</span></span><br><span class="line">3) <span class="string">&quot;jack&quot;</span></span><br><span class="line">4) <span class="string">&quot;20&quot;</span></span><br></pre></td></tr></table></figure>
+<p>这时候我们就可以用Lua脚本来保证操作的原子性了</p>
+<p>lua脚本：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> redis.call(<span class="string">&#x27;get&#x27;</span>,KEYS[<span class="number">1</span>])==ARGV[<span class="number">1</span>] <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">return</span> redis.call(<span class="string">&#x27;del&#x27;</span>,KEYS[<span class="number">1</span>])</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"><span class="keyword">end</span>;</span><br></pre></td></tr></table></figure>
+<p>在redis中：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EVAL <span class="string">&quot;if redis.call(&#x27;get&#x27;,KEYS[1])==ARGV[1] then return redis.call(&#x27;del&#x27;,KEYS[1]) else return 0 end&quot;</span> 1 key value</span><br></pre></td></tr></table></figure>
+<p>在Java中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">key</span> <span class="operator">=</span> <span class="string">&quot;key&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">value</span> <span class="operator">=</span> <span class="string">&quot;value&quot;</span>;</span><br><span class="line"><span class="comment">// 定义 Lua 脚本</span></span><br><span class="line"><span class="type">String</span> <span class="variable">luaScript</span> <span class="operator">=</span> <span class="string">&quot;if redis.call(&#x27;get&#x27;, KEYS[1]) == ARGV[1] then return redis.call(&#x27;del&#x27;, KEYS[1]) else return 0 end&quot;</span>;</span><br><span class="line"><span class="comment">// 执行 Lua 脚本</span></span><br><span class="line"><span class="type">Object</span> <span class="variable">result</span> <span class="operator">=</span> jedis.eval(luaScript, <span class="number">1</span>, key, value);</span><br></pre></td></tr></table></figure>
+<p>到这里，我们就可以解决锁误删的情况了，但是还有另外的一个问题没有解决，锁过期释放了但是业务还没有执行完怎么办？</p>
+<h4 id="Redisson的看门狗机制">Redisson的看门狗机制</h4>
+<p>Redisson和Jedis类似，是Java操作Redis的客户端，他在解决分布式场景问题比Jedis更加好用，提供了各种分布式对象、分布式锁、分布式同步器、分布式服务等等</p>
+<p>Redission分布式锁的实现流程如下</p>
+<p><img src="https://z4a.net/images/2023/09/12/30f68212ee6d9b00b543a1a08405b8b4.png" alt="img"></p>
+<p>Redisson实现自动续约的实现思路即源码如下：</p>
+<p><img src="https://z4a.net/images/2023/09/12/b50a77aa793f221d63104d308df2dcc8_720.png" alt="img"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">renewExpiration</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="comment">// 获取当前锁的过期时间续约条目</span></span><br><span class="line">  RedissonBaseLock.<span class="type">ExpirationEntry</span> <span class="variable">ee</span> <span class="operator">=</span> (RedissonBaseLock.ExpirationEntry) EXPIRATION_RENEWAL_MAP.get(<span class="built_in">this</span>.getEntryName());</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 如果存在续约条目</span></span><br><span class="line">  <span class="keyword">if</span> (ee != <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="comment">// 创建定时任务，定时执行续约操作</span></span><br><span class="line">    <span class="type">Timeout</span> <span class="variable">task</span> <span class="operator">=</span> <span class="built_in">this</span>.commandExecutor.getConnectionManager().newTimeout(<span class="keyword">new</span> <span class="title class_">TimerTask</span>() &#123;</span><br><span class="line">      <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">(Timeout timeout)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">// 获取续约条目</span></span><br><span class="line">        RedissonBaseLock.<span class="type">ExpirationEntry</span> <span class="variable">ent</span> <span class="operator">=</span> (RedissonBaseLock.ExpirationEntry) EXPIRATION_RENEWAL_MAP.get(RedissonBaseLock.<span class="built_in">this</span>.getEntryName());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果续约条目存在</span></span><br><span class="line">        <span class="keyword">if</span> (ent != <span class="literal">null</span>) &#123;</span><br><span class="line">          <span class="type">Long</span> <span class="variable">threadId</span> <span class="operator">=</span> ent.getFirstThreadId();</span><br><span class="line"></span><br><span class="line">          <span class="comment">// 如果存在线程ID</span></span><br><span class="line">          <span class="keyword">if</span> (threadId != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 异步执行续约操作</span></span><br><span class="line">            CompletionStage&lt;Boolean&gt; future = RedissonBaseLock.<span class="built_in">this</span>.renewExpirationAsync(threadId);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 当异步操作完成时</span></span><br><span class="line">            future.whenComplete((res, e) -&gt; &#123;</span><br><span class="line">              <span class="keyword">if</span> (e != <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="comment">// 发生错误时，记录日志并移除续约条目</span></span><br><span class="line">                RedissonBaseLock.log.error(<span class="string">&quot;Can&#x27;t update lock &quot;</span> + RedissonBaseLock.<span class="built_in">this</span>.getRawName() + <span class="string">&quot; expiration&quot;</span>, e);</span><br><span class="line">                RedissonBaseLock.EXPIRATION_RENEWAL_MAP.remove(RedissonBaseLock.<span class="built_in">this</span>.getEntryName());</span><br><span class="line">              &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 如果续约成功，递归调用续约操作</span></span><br><span class="line">                <span class="keyword">if</span> (res) &#123;</span><br><span class="line">                  RedissonBaseLock.<span class="built_in">this</span>.renewExpiration();</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                  <span class="comment">// 如果无法续约，取消续约操作</span></span><br><span class="line">                  RedissonBaseLock.<span class="built_in">this</span>.cancelExpirationRenewal((Long)<span class="literal">null</span>);</span><br><span class="line">                &#125;</span><br><span class="line">              &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;, <span class="built_in">this</span>.internalLockLeaseTime / <span class="number">3L</span>, TimeUnit.MILLISECONDS);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置定时任务到续约条目</span></span><br><span class="line">    ee.setTimeout(task);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span> CompletionStage&lt;Boolean&gt; <span class="title function_">renewExpirationAsync</span><span class="params">(<span class="type">long</span> threadId)</span> &#123;</span><br><span class="line">  <span class="comment">// 使用 evalWriteAsync 方法执行 Lua 脚本</span></span><br><span class="line">  <span class="comment">// 这个脚本会检查锁是否仍然由给定的线程持有，如果是则更新锁的过期时间</span></span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">this</span>.evalWriteAsync(</span><br><span class="line">    <span class="built_in">this</span>.getRawName(),                       <span class="comment">// 锁的键名</span></span><br><span class="line">    LongCodec.INSTANCE,                      <span class="comment">// 键的编码器</span></span><br><span class="line">    RedisCommands.EVAL_BOOLEAN,              <span class="comment">// 使用 EVAL 命令并返回布尔值</span></span><br><span class="line">    <span class="string">&quot;if (redis.call(&#x27;hexists&#x27;, KEYS[1], ARGV[2]) == 1) then redis.call(&#x27;pexpire&#x27;, KEYS[1], ARGV[1]); return 1; end; return 0;&quot;</span>,</span><br><span class="line">    Collections.singletonList(<span class="built_in">this</span>.getRawName()),     <span class="comment">// 键名作为 KEYS[1]</span></span><br><span class="line">    <span class="built_in">this</span>.internalLockLeaseTime,              <span class="comment">// 锁的过期时间（毫秒）</span></span><br><span class="line">    <span class="built_in">this</span>.getLockName(threadId)               <span class="comment">// 获取锁的名称，用于验证锁的持有者</span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>总结：</p>
+<ol>
+<li>只有在未指定锁超时时间时，才会使用看门狗</li>
+<li>如果Redisson实例挂了，看门狗也会跟着crash，那么达到失效时间的这个key会被redis清除，锁也就被释放了，不会出现锁被永久占用的问题。</li>
+</ol>
+<p>Redisson的RLock接口继承了JUC的lock接口，所以他是符合Java中的Lock接口规范的，同时Redisson还提供了多种分布式锁的实现类（例如：RedissonFairLock、RedissonRedLock等）可供大家选择</p>
+<h4 id="Redis集群数据不一致问题">Redis集群数据不一致问题</h4>
+<p>在部署redis时，为了避免单点问题，我们通常会采用<strong>集群</strong>方式部署，由于redis集群的数据同步是异步操作，在主节点加锁后就会返回加锁成功；如果一个线程在master节点上拿到了锁，但是<strong>加锁的key还没同步到slave节点时master节点就发生了故障</strong>，一个slave节点就会升级成master节点，其他线程就也可以获取同个key的锁，又一次<strong>相当于没加锁</strong></p>
+<p>redis的作者提出了一种高级的分布式锁算法：Redlock，来解决这个问题</p>
+<p><strong>Redlock核心思想</strong></p>
+<p>搞<strong>多个Redis master</strong>部署，以保证它们不会同时宕掉。并且这些master节点是<strong>完全相互独立</strong>的，相互之间不存在数据同步。同时，需要确保在这多个master实例上，是在与Redis单实例使用相同方法来获取和释放锁。</p>
+<p><img src="https://z4a.net/images/2023/09/12/1aa899e61190d30d11f5fa9b1ded6cf4.png" alt="img"></p>
+<p><strong>Redlock流程步骤</strong></p>
+<p>1、按顺序向多个master节点（如上图5个）请求加锁</p>
+<p>2、根据设置的超时时间来判断，是不是要跳过该master节点；</p>
+<p>3、如果有半数以上节点加锁成功(右图3个成功即可)，并且使用的时间小于锁的有效期（设置单个节点超时时间），即可认定加锁成功；</p>
+<p>4、如果获取锁失败，给所有的master节点解锁</p>
+<h3 id="基于ZooKeeper实现的分布式锁">基于ZooKeeper实现的分布式锁</h3>
+<p>这个之前已经写过博客辣，大家直接点击链接跳转即可~</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_51561690/article/details/130408064">基于ZooKeeper临时顺序节点的分布式锁实现_❀always❀的博客-CSDN博客</a></p>
+<p>实现思路如下：</p>
+<p><img src="https://z4a.net/images/2023/09/12/image-20230814200751479.png" alt="image-20230814200751479"></p>
+<h3 id="分布式锁实现方案比较">分布式锁实现方案比较</h3>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>思路</th>
+<th>优点</th>
+<th>缺点</th>
+<th>典型场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mysql</td>
+<td>悲观锁、乐观锁</td>
+<td>实现简单、稳定可靠</td>
+<td>性能差，不适合高并发</td>
+<td>分布式定时任务</td>
+</tr>
+<tr>
+<td>redis</td>
+<td>基于SETNX和Lua脚本保证缓存操作原子化</td>
+<td>性能好（AP）</td>
+<td>实现相对复杂，不是100%可靠</td>
+<td>秒杀、抢购、大型抽奖</td>
+</tr>
+<tr>
+<td>zookeeper</td>
+<td>基于ZK的节点特性和Watcher机制</td>
+<td>可靠性高（CP）</td>
+<td>实现相对复杂，性能略差</td>
+<td>秒杀、抢购、大型抽奖</td>
+</tr>
+</tbody>
+</table>
+<h3 id="分布式锁与高并发">分布式锁与高并发</h3>
+<p>从设计角度来看，分布式锁和高并发本身是<strong>矛盾</strong>的：分布式锁实际是将<strong>并行代码串行化</strong>来解决并发问题，对性能是有影响的，但是可以进行优化。</p>
+<p>主要方案有：</p>
+<ol>
+<li>锁粒度最小：尽可能地将最小粒度的有并发安全问题的代码放在锁里面，其他代码都放到锁外面去，这是锁的基本优化原则</li>
+<li>数据分片：例如ConcurrentHashMap使用分段锁机制提高并发能力，MySQL分库分表（将压力分摊到不同DB上）等</li>
+</ol>
+<h3 id="业务场景中分布式锁的应用">业务场景中分布式锁的应用</h3>
+<ul>
+<li>
+<p>某事件发生后需要发短信提醒用户，且两小时之内多次发生该事件只在第一次提醒用户</p>
+<p>实现思路：在每次发短信之前先获取分布式锁，设定过期时间为2h，若2h内事件再次发生则无法获取到相同的分布式锁，自动跳过发送短信的流程即可</p>
+</li>
+<li>
+<p>保证某表中以 id+当日时间 为唯一标识的数据只有一条</p>
+<p>实现思路：在插入或更新时，先获取到分布式锁，成功插入后解锁</p>
+</li>
+<li>
+<p>抢购某总量限定的奖品</p>
+<p>实现思路：每个线程抢占分布式锁，抢占成功后判断剩余数量是否满足所需数量，若满足，则抢购成功并释放锁</p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/09/12/%E5%B8%B8%E8%A7%81%E7%9A%84%E6%95%8F%E6%84%9F%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86%E6%96%B9%E6%A1%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="AlwaysXR">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/09/12/%E5%B8%B8%E8%A7%81%E7%9A%84%E6%95%8F%E6%84%9F%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86%E6%96%B9%E6%A1%88/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-09-12 11:49:37 / 修改时间：11:59:40" itemprop="dateCreated datePublished" datetime="2023-09-12T11:49:37+08:00">2023-09-12</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1>常见的敏感数据加密方案</h1>
+<p>招联内部分享资料</p>
+<h3 id="常见的加密手段">常见的加密手段</h3>
+<ol>
+<li>
+<p>网络层加密</p>
+<p>通常用于保障数据再网络传输时的安全</p>
+</li>
+<li>
+<p>硬件层加密</p>
+<p>数据的存储设备提供加密，例如硬盘加密</p>
+</li>
+<li>
+<p>磁盘加密</p>
+<p>通过在磁盘读写时对磁盘扇区进行加解密来实现，避免文件的读写，避免了与应用程序相关的限制</p>
+</li>
+<li>
+<p>文件加密</p>
+<p>通过堆叠在其他文件系统之上（如Ext2，Ext3，ReiserFS，JFS等）。最新型应用是”透明加解密“，主要是通过建立应用程序的进程和相应文件之间的关联来达到对特定文件的加解密的目的，通常在操作系统底层对文件进行处理，其加解密过程对用户透明。但是，由于该技术的实现机制所限，决定了文件是否加密主要取决于应用程序和文件的关联关系，这导致安全系统与应用程序的具体实现密切相关，对于用户环境的兼容性较差，针织有可能出现数据被破坏的情况</p>
+</li>
+<li>
+<p>数据库加密-TDE</p>
+<p>数据库提供的一种加密技术，即对数据文件执行实时I/O加密和解密。数据在写入磁盘之前进行加密，从磁盘读入内存时进行解密。TDE不会增加数据文件的大小，开发人员无需更改任何应用程序。其对应密钥管理也是由数据库提供的API或组件实现，应用透明。在某些场景下磁盘或系统无法对用户开放（如云环境）的条件下，这种方式就比较合适</p>
+</li>
+<li>
+<p>应用层加密</p>
+<p>可以说是一种终极方案，其可保证在数据到达数据库之前，就已经做了加密处理，可实时保护用户敏感数据。这里关键需要提供应用透明性，保证应用无需改造或仅需要少量改造。这种方式完全由用户自己控制，无需信任任何三方厂商提供的数据安全保障，得到充分的自由度和灵活性。</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>安全风险</th>
+<th>磁盘加密</th>
+<th>文件加密</th>
+<th>数据库加密</th>
+<th>应用层加密</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>防止磁盘丢失引起数据泄露</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>防止系统root账户和管理员账户访问</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>控制数据库管理员访问数据</td>
+<td>×</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>抵抗APT（定向威胁攻击）造成数据泄露</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>确保备份数据和数据快照加密存储</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>非结构化数据和文件的保护</td>
+<td>√</td>
+<td>√</td>
+<td>×</td>
+<td>√</td>
+</tr>
+<tr>
+<td>防止硬件和数据库厂商偷窥</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>​							部署复杂度</p>
+<p>-----------------------------------------------------------------&gt;&gt;&gt;</p>
+<p>应用层加密  数据库加密  文件层加密  存储层加密</p>
+<p>&lt;&lt;&lt;-----------------------------------------------------------------</p>
+<p>​							数据安全性</p>
+</blockquote>
+<h3 id="常见的加密算法">常见的加密算法</h3>
+<ol>
+<li>
+<p>散列函数（散列函数、哈希函数）</p>
+<p>把消息或数据压缩成摘要，使得数据量变小，使数据的格式固定成特定长度的值，没有解密过程。</p>
+<p>散列结果不可逆，常用于校验数据是否完整等</p>
+<p>常见算法：MD5、SHA-256等</p>
+</li>
+<li>
+<p>对称加密</p>
+<p>只有一个密钥，加密解密都用它。要求加解密双方事先知道加密的密钥。</p>
+<p>优点：算法公开，计算量小，加密速度快，效率高</p>
+<p>缺点：密钥泄露数据就会被破解</p>
+<p>常见算法：</p>
+<p>​	DES：数据加密标准，速度较快，适用于加密大量数据的场合</p>
+<p>​	3DES：基于DES用三组不同密钥对一块数据进行三次加密，安全性更高</p>
+<p>​	AES：高级加密标准，是下一代加密算法标准，速度快，安全级别高，支持128、192、256位密钥的加密</p>
+</li>
+<li>
+<p>非对称加密</p>
+<p>有公钥和私钥，二者配对生成</p>
+<p>优点：算法强度复杂、安全性高</p>
+<p>缺点：加解密速度没有对称加密算法快</p>
+<p>常见算法：</p>
+<p>​	RSA：基于大整数分解难的问题提出。速度比同样安全级别的对称密码算法要慢1000倍。常用1024、2048位密钥加解密</p>
+<p>​	ECC：基于椭圆曲线上的离散对数计算问题提出，在数学上更难，但是计算更快。常用256位</p>
+<p>ECC和RSA相比在许多方面有优势：</p>
+<ul>
+<li>抗攻击型强</li>
+<li>CPU占用少</li>
+<li>内容使用少</li>
+<li>网络消耗低</li>
+<li>加密速度快</li>
+<li>随安全等级提升RSA密钥长度指数级增长，而ECC是线性增长</li>
+</ul>
+<p>已经证明，3072bit的RSA  和  283bit的ECC  和  128bit的对称密码的  <strong>算法强度相当</strong></p>
+</li>
+</ol>
+<h3 id="实践">实践</h3>
+<p>密码管理系统KMS</p>
+<ul>
+<li>密钥管理（包括第三方密钥导入、托管）</li>
+<li>数据库密码管理</li>
+<li>身份证手机号银行卡号等敏感信息加密（身份证号、手机号、银行卡号等敏感信息不允许明文落库）</li>
+<li>密码信息管理（业务系统中，无感获取和使用）</li>
+<li>证书管理</li>
+</ul>
+<p><strong>kms应用架构</strong></p>
+<p>持续部署对kms的单项依赖，并由持续部署实现密钥文件的注入</p>
+<p><img src="https://z4a.net/images/2023/09/12/image-20230811091247482.png" alt="image-20230811091247482"></p>
+<p><strong>客户端是如何获得和使用密钥的</strong></p>
+<p><img src="https://z4a.net/images/2023/09/12/8ffb939edabe60ecfb319225e1efde48.png" alt="img"></p>
+<p><strong>密钥是如何生成的</strong></p>
+<p>密钥的分层结构：数据加密密钥 (工作密),密钥加密密钥,根密钥。下层密钥为上策密钥体提供保护</p>
+<p>数据加密密钥：工作密钥对本地保存的敏感数据和需要在不安全信道上传输的数据提供机密性、完整性保护，还可提供认证和签名等密码学服务。工作密钥直接被上层应用程序所使用，包括存储加密使用的密钥、预共享密钥、MAC密钥、签名私钥等</p>
+<p>密钥加密密钥：对工作密钥提供机密性保护的密钥，其自身受到根密钥的保护</p>
+<p>根密钥：位于密钥管理分层结构的最底端，用于对上层密钥 (如密钥加密密钥)</p>
+<p><img src="https://z4a.net/images/2023/09/12/4dba650cdc025f2b23c00fef561566f4.png" alt="img"></p>
+<p><strong>实现信息加密的流程</strong>（密钥是如何使用的）</p>
+<p><img src="https://z4a.net/images/2023/09/12/image-20230811094115460.png" alt="image-20230811094115460"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/09/12/CompletableFuture%E5%85%A5%E9%97%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="AlwaysXR">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | ALWAYSXR BLOG">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/09/12/CompletableFuture%E5%85%A5%E9%97%A8/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-09-12 11:49:37 / 修改时间：11:55:21" itemprop="dateCreated datePublished" datetime="2023-09-12T11:49:37+08:00">2023-09-12</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1>CompletableFuture</h1>
+<h3 id="回顾Future">回顾Future</h3>
+<p>Future可以实现异步并行调用，如下面这段代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FutureTest</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ExecutionException,</span><br><span class="line">			InterruptedException &#123;</span><br><span class="line"></span><br><span class="line">		<span class="type">ExecutorService</span> <span class="variable">executorService</span> <span class="operator">=</span> Executors.newFixedThreadPool(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">		<span class="type">UserInfoService</span> <span class="variable">userInfoService</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">UserInfoService</span>();</span><br><span class="line">		<span class="type">MedalService</span> <span class="variable">medalService</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MedalService</span>();</span><br><span class="line">		<span class="type">long</span> <span class="variable">userId</span> <span class="operator">=</span> <span class="number">666L</span>;</span><br><span class="line">		<span class="type">long</span> <span class="variable">startTime</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line">		<span class="comment">//操作一</span></span><br><span class="line">		FutureTask&lt;UserInfo&gt; userInfoFutureTask =</span><br><span class="line">				<span class="keyword">new</span> <span class="title class_">FutureTask</span>&lt;&gt;(() -&gt; &#123;</span><br><span class="line">					Thread.sleep(<span class="number">10000</span>);</span><br><span class="line">					<span class="keyword">return</span> userInfoService.getUserInfo(userId);</span><br><span class="line">				&#125;);</span><br><span class="line">		executorService.submit(userInfoFutureTask);</span><br><span class="line">        <span class="comment">//操作二        </span></span><br><span class="line">		FutureTask&lt;MedalInfo&gt; medalInfoFutureTask =</span><br><span class="line">				<span class="keyword">new</span> <span class="title class_">FutureTask</span>&lt;&gt;(() -&gt; &#123;</span><br><span class="line">					Thread.sleep(<span class="number">10000</span>);</span><br><span class="line">					<span class="keyword">return</span> medalService.getMedalInfo(userId);</span><br><span class="line">				&#125;);</span><br><span class="line">		executorService.submit(medalInfoFutureTask);</span><br><span class="line"></span><br><span class="line">		<span class="type">UserInfo</span> <span class="variable">userInfo</span> <span class="operator">=</span> userInfoFutureTask.get();<span class="comment">//获取个人信息结果</span></span><br><span class="line">		<span class="type">MedalInfo</span> <span class="variable">medalInfo</span> <span class="operator">=</span> medalInfoFutureTask.get();<span class="comment">//获取勋章信息结果</span></span><br><span class="line">		System.out.println(userInfo);</span><br><span class="line">		System.out.println(medalInfo);</span><br><span class="line">		System.out.println(<span class="string">&quot;总共用时&quot;</span> + (System.currentTimeMillis() - startTime) + <span class="string">&quot;ms&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>两个操作中，我们都加入了一个sleep方法来模拟10s的耗时操作，如果不使用异步并行而让主线程去处理这两个任务，则会消耗20s，使用Future+线程池的异步操作则只需要10s即可完成。</p>
+<p>但是Future并不是完美的，它在结果获取的方面做的不是很好（处理方式为阻塞或者轮询）：</p>
+<ol>
+<li>Future.get() 就是阻塞调用，在线程获取结果之前<strong>get方法会一直阻塞</strong>。</li>
+<li>Future提供了一个isDone方法，可以在程序中<strong>轮询这个方法查询</strong>执行结果。</li>
+</ol>
+<p>阻塞违背了异步调用的设计初衷，而轮询会对CPU造成无谓的占用</p>
+<h3 id="CompletableFuture引入">CompletableFuture引入</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CompletableFutureTest</span> &#123;</span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException,</span><br><span class="line">   ExecutionException &#123;</span><br><span class="line">  <span class="type">UserInfoService</span> <span class="variable">userInfoService</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">UserInfoService</span>();</span><br><span class="line">  <span class="type">MedalService</span> <span class="variable">medalService</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MedalService</span>();</span><br><span class="line">  <span class="type">Long</span> <span class="variable">id</span> <span class="operator">=</span> <span class="number">666L</span>;</span><br><span class="line">  <span class="type">Long</span> <span class="variable">startTime</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">  <span class="comment">//操作一</span></span><br><span class="line">  CompletableFuture&lt;UserInfo&gt; completableFutureUserInfo =</span><br><span class="line">    CompletableFuture.supplyAsync(<span class="keyword">new</span> <span class="title class_">Supplier</span>&lt;UserInfo&gt;() &#123;</span><br><span class="line">     <span class="meta">@Override</span></span><br><span class="line">     <span class="keyword">public</span> UserInfo <span class="title function_">get</span><span class="params">()</span> &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">       <span class="keyword">return</span> userInfoService.getUserInfo(id);</span><br><span class="line">      &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">       e.printStackTrace();</span><br><span class="line">       <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">      &#125;</span><br><span class="line">     &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="comment">//操作二</span></span><br><span class="line">  CompletableFuture&lt;MedalInfo&gt; completableFutureMedalInfo =</span><br><span class="line">    CompletableFuture.supplyAsync(<span class="keyword">new</span> <span class="title class_">Supplier</span>&lt;MedalInfo&gt;() &#123;</span><br><span class="line">     <span class="meta">@Override</span></span><br><span class="line">     <span class="keyword">public</span> MedalInfo <span class="title function_">get</span><span class="params">()</span> &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">       <span class="keyword">return</span> medalService.getMedalInfo(id);</span><br><span class="line">      &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">       e.printStackTrace();</span><br><span class="line">       <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">      &#125;</span><br><span class="line">     &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  <span class="type">UserInfo</span> <span class="variable">userInfo</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">  <span class="type">MedalInfo</span> <span class="variable">medalInfo</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">   <span class="comment">//普通的get，阻塞线程直到获得到结果</span></span><br><span class="line">   medalInfo = completableFutureMedalInfo.get();</span><br><span class="line">   <span class="comment">//限时的get，如果限定时间内没有结果抛出超时异常（调用get方法开始计时）</span></span><br><span class="line">   userInfo = completableFutureUserInfo.get(<span class="number">1</span>, TimeUnit.MICROSECONDS);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">   e.printStackTrace();</span><br><span class="line">   System.out.println(<span class="string">&quot;超时了！&quot;</span>+ (Objects.isNull(userInfo)?<span class="string">&quot;超时&quot;</span>:userInfo));</span><br><span class="line">  &#125;</span><br><span class="line">  System.out.println(userInfo + <span class="string">&quot;  &quot;</span> + medalInfo);</span><br><span class="line">  System.out.println(System.currentTimeMillis() - startTime + <span class="string">&quot;ms&quot;</span>);</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在CompletableFuture中，我们可以选择让异步任务在其默认的线程池（ForkJoinPool.commonPool）中运行。</p>
+<p>CompletableFuture提供了几十种方法，辅助我们的异步任务场景。这些方法包括<strong>创建异步任务、任务异步回调、多个任务组合处理</strong>等方面。</p>
+<h3 id="创建异步任务">创建异步任务</h3>
+<p>异步任务可以分为两大类：有返回结果（supplyAsync）和无返回结果（runAsync）</p>
+<ul>
+<li>
+<p>supplyAsync</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//使用默认内置线程池ForkJoinPool.commonPool()，根据supplier构建执行任务</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;U&gt; CompletableFuture&lt;U&gt; <span class="title function_">supplyAsync</span><span class="params">(Supplier&lt;U&gt; supplier)</span></span><br><span class="line"><span class="comment">//根据supplier构建执行任务，使用自定义的线程池</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;U&gt; CompletableFuture&lt;U&gt; <span class="title function_">supplyAsync</span><span class="params">(Supplier&lt;U&gt; supplier, Executor executor)</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>runAsync</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//使用默认内置线程池ForkJoinPool.commonPool()，根据runnable构建执行任务</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> CompletableFuture&lt;Void&gt; <span class="title function_">runAsync</span><span class="params">(Runnable runnable)</span> </span><br><span class="line"><span class="comment">//根据supplier构建执行任务，使用自定义的线程池</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> CompletableFuture&lt;Void&gt; <span class="title function_">runAsync</span><span class="params">(Runnable runnable,  Executor executor)</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>获取任务结果的方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// 如果完成则返回结果，否则就抛出具体的异常</span></span><br><span class="line"><span class="keyword">public</span> T <span class="title function_">get</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException, ExecutionException </span><br><span class="line"> </span><br><span class="line"><span class="comment">// 最大时间等待返回结果，否则就抛出具体异常</span></span><br><span class="line"><span class="keyword">public</span> T <span class="title function_">get</span><span class="params">(<span class="type">long</span> timeout, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException, ExecutionException, TimeoutException</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 完成时返回结果值，否则抛出unchecked异常。为了更好地符合通用函数形式的使用，如果完成此 CompletableFuture所涉及的计算引发异常，则此方法将引发unchecked异常并将底层异常作为其原因</span></span><br><span class="line"><span class="keyword">public</span> T <span class="title function_">join</span><span class="params">()</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">// 如果完成则返回结果值（或抛出任何遇到的异常），否则返回给定的 valueIfAbsent。</span></span><br><span class="line"><span class="keyword">public</span> T <span class="title function_">getNow</span><span class="params">(T valueIfAbsent)</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">// 如果任务没有完成，返回的值设置为给定值</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">complete</span><span class="params">(T value)</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">// 如果任务没有完成，就抛出给定异常</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">completeExceptionally</span><span class="params">(Throwable ex)</span> </span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="任务异步回调">任务异步回调</h3>
+<p><img src="https://z4a.net/images/2023/09/12/image-20230803170636483.png" alt="image-20230803170636483"></p>
+<ul>
+<li>
+<p>thenRun和thenRunAsync</p>
+<p>thenRun表示某个任务执行完成后执行的动作，即回调方法，无入参，无返回值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ExecutionException, InterruptedException &#123;</span><br><span class="line">        CompletableFuture&lt;Integer&gt; cf1 = CompletableFuture.supplyAsync(() -&gt; &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot; cf1 do something....&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">        &#125;);</span><br><span class="line"> </span><br><span class="line">        CompletableFuture&lt;Void&gt; cf2 = cf1.thenRun(() -&gt; &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot; cf2 do something....&quot;</span>);</span><br><span class="line">        &#125;);</span><br><span class="line"> </span><br><span class="line">        <span class="comment">//等待任务1执行完成</span></span><br><span class="line">        System.out.println(<span class="string">&quot;cf1结果-&gt;&quot;</span> + cf1.get());</span><br><span class="line">        <span class="comment">//等待任务2执行完成</span></span><br><span class="line">        System.out.println(<span class="string">&quot;cf2结果-&gt;&quot;</span> + cf2.get());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出结果：</span></span><br><span class="line"><span class="comment">cf1 do something....</span></span><br><span class="line"><span class="comment">cf2 do something....</span></span><br><span class="line"><span class="comment">1</span></span><br><span class="line"><span class="comment">null</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>thenAccept和thenAcceptAsync</p>
+<p>thenAccep表示某个任务执行完成后执行的动作，即回调方法，会将该任务的执行结果即方法返回值作为入参传递到回调方法中，无返回值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ExecutionException, InterruptedException &#123;</span><br><span class="line">		CompletableFuture&lt;Integer&gt; cf1 = CompletableFuture.supplyAsync(() -&gt; &#123;</span><br><span class="line">			System.out.println(<span class="string">&quot;cf1 do something....&quot;</span>);</span><br><span class="line">			<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">		&#125;);</span><br><span class="line"></span><br><span class="line">		CompletableFuture&lt;Void&gt; cf2 = cf1.thenAccept((result) -&gt; &#123;</span><br><span class="line">			System.out.println(<span class="string">&quot;accept:&quot;</span>+ result);</span><br><span class="line">			System.out.println(<span class="string">&quot;cf2 do something....&quot;</span>);</span><br><span class="line">		&#125;);</span><br><span class="line"></span><br><span class="line">		<span class="comment">//等待任务1执行完成</span></span><br><span class="line">		System.out.println(<span class="string">&quot;cf1结果-&gt;&quot;</span> + cf1.get());</span><br><span class="line">		<span class="comment">//等待任务2执行完成</span></span><br><span class="line">		System.out.println(<span class="string">&quot;cf2结果-&gt;&quot;</span> + cf2.get());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">cf1 do something....</span></span><br><span class="line"><span class="comment">accept:1</span></span><br><span class="line"><span class="comment">cf2 do something....</span></span><br><span class="line"><span class="comment">cf1结果-&gt;1</span></span><br><span class="line"><span class="comment">cf2结果-&gt;null</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>thenApply和thenApplyAsync</p>
+<p>thenApply 表示某个任务执行完成后执行的动作，即回调方法，会将该任务的执行结果即方法返回值作为入参传递到回调方法中，带有返回值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ExecutionException, InterruptedException &#123;</span><br><span class="line">        CompletableFuture&lt;Integer&gt; cf1 = CompletableFuture.supplyAsync(() -&gt; &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;cf1 do something....&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">        &#125;);</span><br><span class="line"> </span><br><span class="line">        CompletableFuture&lt;Integer&gt; cf2 = cf1.thenApplyAsync((result) -&gt; &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;cf2 do something....&quot;</span>);</span><br><span class="line">            result += <span class="number">2</span>;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="comment">//等待任务1执行完成</span></span><br><span class="line">        System.out.println(<span class="string">&quot;cf1结果-&gt;&quot;</span> + cf1.get());</span><br><span class="line">        <span class="comment">//等待任务2执行完成</span></span><br><span class="line">        System.out.println(<span class="string">&quot;cf2结果-&gt;&quot;</span> + cf2.get());</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">cf1 do something....</span></span><br><span class="line"><span class="comment">cf2 do something....</span></span><br><span class="line"><span class="comment">1</span></span><br><span class="line"><span class="comment">3</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>exceptionally</p>
+<p>CompletableFuture的exceptionally方法表示，某个任务执行异常时，执行的回调方法;并且有抛出异常作为参数，传递到回调方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ExecutionException, InterruptedException &#123;</span><br><span class="line">		CompletableFuture&lt;String&gt; orgFuture = CompletableFuture.supplyAsync(</span><br><span class="line">				()-&gt;&#123;</span><br><span class="line">					System.out.println(<span class="string">&quot;当前线程名称：&quot;</span> + Thread.currentThread().getName());</span><br><span class="line">					<span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>();</span><br><span class="line">				&#125;</span><br><span class="line">		);</span><br><span class="line"></span><br><span class="line">		CompletableFuture&lt;String&gt; exceptionFuture = orgFuture.exceptionally((e) -&gt; &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">			<span class="keyword">return</span> <span class="string">&quot;你的程序异常啦&quot;</span>;</span><br><span class="line">		&#125;);</span><br><span class="line">   		<span class="comment">//加上这句会直接报异常</span></span><br><span class="line">		<span class="comment">//System.out.println(orgFuture.get());</span></span><br><span class="line">		System.out.println(exceptionFuture.get());</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">jdk17版本的输出：</span></span><br><span class="line"><span class="comment">当前线程名称：ForkJoinPool.commonPool-worker-1</span></span><br><span class="line"><span class="comment">你的程序异常啦</span></span><br><span class="line"><span class="comment">java.util.concurrent.CompletionException: java.lang.RuntimeException</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:315)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:320)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1770)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1760)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:373)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1182)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1655)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1622)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:165)</span></span><br><span class="line"><span class="comment">Caused by: java.lang.RuntimeException</span></span><br><span class="line"><span class="comment">	at ComFutureTest.FutureExceptionTest.lambda$main$0(FutureExceptionTest.java:13)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1768)</span></span><br><span class="line"><span class="comment">	... 6 more</span></span><br><span class="line"><span class="comment">	*/</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>whenComplete和whenCompleteAsync<br>
+whenComplete是当某个任务执行完成后执行的回调方法，会将执行结果或者执行期间抛出的异常传递给回调方法，如果是正常执行则异常为null，回调方法对应的CompletableFuture的result和该任务一致，如果该任务正常执行，则get方法返回执行结果，如果是执行异常，则get方法抛出异常。</p>
+<p>whenComplete</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ExecutionException, InterruptedException &#123;</span><br><span class="line">        CompletableFuture&lt;Integer&gt; cf1 = CompletableFuture.supplyAsync(() -&gt; &#123;</span><br><span class="line">            System.out.println(Thread.currentThread() + <span class="string">&quot; cf1 do something....&quot;</span>);</span><br><span class="line">            <span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">1</span>/<span class="number">0</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">        &#125;);</span><br><span class="line"> </span><br><span class="line">        CompletableFuture&lt;Integer&gt; cf2 = cf1.whenComplete((result, e) -&gt; &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;上个任务结果：&quot;</span> + result);</span><br><span class="line">            System.out.println(<span class="string">&quot;上个任务抛出异常：&quot;</span> + e);</span><br><span class="line">            System.out.println(Thread.currentThread() + <span class="string">&quot; cf2 do something....&quot;</span>);</span><br><span class="line">        &#125;);</span><br><span class="line">        System.out.println(<span class="string">&quot;cf2结果-&gt;&quot;</span> + cf2.get());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">Thread[ForkJoinPool.commonPool-worker-1,5,main] cf1 do something....</span></span><br><span class="line"><span class="comment">上个任务结果：null</span></span><br><span class="line"><span class="comment">上个任务抛出异常：java.util.concurrent.CompletionException: java.lang.ArithmeticException: / by zero</span></span><br><span class="line"><span class="comment">Thread[ForkJoinPool.commonPool-worker-1,5,main] cf2 do something....</span></span><br><span class="line"><span class="comment">Exception in thread &quot;main&quot; java.util.concurrent.ExecutionException: java.lang.ArithmeticException: / by zero</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:396)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2073)</span></span><br><span class="line"><span class="comment">	at ComFutureTest.FutureExceptionTest.main(FutureExceptionTest.java:41)</span></span><br><span class="line"><span class="comment">Caused by: java.lang.ArithmeticException: / by zero</span></span><br><span class="line"><span class="comment">	at ComFutureTest.FutureExceptionTest.lambda$main$0(FutureExceptionTest.java:28)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1768)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1760)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:373)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1182)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1655)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1622)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:165)</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<p>whenCompleteAsync		区别在于能有指定使用自定义线程池</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ExecutionException, InterruptedException &#123;</span><br><span class="line">	CompletableFuture&lt;Integer&gt; cf1 = CompletableFuture.supplyAsync(() -&gt; &#123;</span><br><span class="line">		System.out.println(Thread.currentThread() + <span class="string">&quot; cf1 do something....&quot;</span>);</span><br><span class="line">		<span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">1</span>/<span class="number">0</span>;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;);</span><br><span class="line"></span><br><span class="line">	CompletableFuture&lt;Integer&gt; cf2 = cf1.whenCompleteAsync((result, e) -&gt; &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;上个任务结果：&quot;</span> + result);</span><br><span class="line">		System.out.println(<span class="string">&quot;上个任务抛出异常：&quot;</span> + e);</span><br><span class="line">		System.out.println(Thread.currentThread() + <span class="string">&quot; cf2 do something....&quot;</span>);</span><br><span class="line">	&#125;, Executors.newSingleThreadExecutor());</span><br><span class="line"></span><br><span class="line">	System.out.println(<span class="string">&quot;cf2结果-&gt;&quot;</span> + cf2.get());</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*若注释异常代码</span></span><br><span class="line"><span class="comment">Thread[ForkJoinPool.commonPool-worker-1,5,main] cf1 do something....</span></span><br><span class="line"><span class="comment">上个任务结果：1</span></span><br><span class="line"><span class="comment">上个任务抛出异常：null</span></span><br><span class="line"><span class="comment">Thread[pool-1-thread-1,5,main] cf2 do something....</span></span><br><span class="line"><span class="comment">cf2结果-&gt;1</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*带有异常</span></span><br><span class="line"><span class="comment">Thread[ForkJoinPool.commonPool-worker-1,5,main] cf1 do something....</span></span><br><span class="line"><span class="comment">上个任务结果：null</span></span><br><span class="line"><span class="comment">上个任务抛出异常：java.util.concurrent.CompletionException: java.lang.ArithmeticException: / by zero</span></span><br><span class="line"><span class="comment">Thread[pool-1-thread-1,5,main] cf2 do something....</span></span><br><span class="line"><span class="comment">Exception in thread &quot;main&quot; java.util.concurrent.ExecutionException: java.lang.ArithmeticException: / by zero</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:396)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2073)</span></span><br><span class="line"><span class="comment">	at ComFutureTest.FutureExceptionTest.main(FutureExceptionTest.java:42)</span></span><br><span class="line"><span class="comment">Caused by: java.lang.ArithmeticException: / by zero</span></span><br><span class="line"><span class="comment">	at ComFutureTest.FutureExceptionTest.lambda$main$0(FutureExceptionTest.java:29)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1768)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1760)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:373)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1182)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1655)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1622)</span></span><br><span class="line"><span class="comment">	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:165)</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>handle和handleAsync</p>
+<p>跟whenComplete基本一致，区别在于handle的回调方法有返回值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ExecutionException, InterruptedException &#123;</span><br><span class="line">        CompletableFuture&lt;Integer&gt; cf1 = CompletableFuture.supplyAsync(() -&gt; &#123;</span><br><span class="line">            System.out.println(Thread.currentThread() + <span class="string">&quot; cf1 do something....&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">        CompletableFuture&lt;Integer&gt; cf2 = cf1.handle((result, e) -&gt; &#123;</span><br><span class="line">            System.out.println(Thread.currentThread() + <span class="string">&quot; cf2 do something....&quot;</span>);</span><br><span class="line">            System.out.println(<span class="string">&quot;上个任务结果：&quot;</span> + result);</span><br><span class="line">            System.out.println(<span class="string">&quot;上个任务抛出异常：&quot;</span> + e);</span><br><span class="line">            <span class="keyword">return</span> result+<span class="number">2</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="comment">//等待任务2执行完成</span></span><br><span class="line">        System.out.println(<span class="string">&quot;cf2结果-&gt;&quot;</span> + cf2.get());</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">Thread[ForkJoinPool.commonPool-worker-1,5,main] cf1 do something....</span></span><br><span class="line"><span class="comment">Thread[ForkJoinPool.commonPool-worker-1,5,main] cf2 do something....</span></span><br><span class="line"><span class="comment">上个任务结果：1</span></span><br><span class="line"><span class="comment">上个任务抛出异常：null</span></span><br><span class="line"><span class="comment">cf2结果-&gt;3</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="多任务组合处理">多任务组合处理</h3>
+<p><img src="https://z4a.net/images/2023/09/12/image-20230804102340783.png" alt="image-20230804102340783"></p>
+<ul>
+<li>
+<p>AND组合</p>
+<p>thenCombine / thenAcceptBoth / runAfterBoth都表示：<strong>将两个CompletableFuture组合起来，只有这两个都正常执行完了，才会执行某个任务</strong>。</p>
+<p>区别在于：</p>
+<ul>
+<li>thenCombine：会将两个任务的执行结果作为方法入参，传递到指定方法中，且<strong>有返回值</strong></li>
+<li>thenAcceptBoth: 会将两个任务的执行结果作为方法入参，传递到指定方法中，且<strong>无返回值</strong></li>
+<li>runAfterBoth 不会把执行结果当做方法入参，且没有返回值。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException, ExecutionException, TimeoutException &#123;</span><br><span class="line">    	<span class="comment">//CompletableFuture.completedFuture 是 CompletableFuture 类的一个静态方法，它可以用于创建一个已经完成（已经执行完毕）的 CompletableFuture。</span></span><br><span class="line">        CompletableFuture&lt;String&gt; first = CompletableFuture.completedFuture(<span class="string">&quot;第一个异步任务&quot;</span>);</span><br><span class="line">        <span class="type">ExecutorService</span> <span class="variable">executor</span> <span class="operator">=</span> Executors.newFixedThreadPool(<span class="number">10</span>);</span><br><span class="line">        CompletableFuture&lt;String&gt; future = CompletableFuture</span><br><span class="line">                <span class="comment">//第二个异步任务</span></span><br><span class="line">                .supplyAsync(() -&gt; <span class="string">&quot;第二个异步任务&quot;</span>, executor)</span><br><span class="line">                <span class="comment">// thenCombineAsync(第一个异步任务，(第二个异步任务的返回值，第一个异步任务的返回值))</span></span><br><span class="line">                .thenCombineAsync(first, (s, w) -&gt; &#123;</span><br><span class="line">                    System.out.println(w);</span><br><span class="line">                    System.out.println(s);</span><br><span class="line">                    <span class="keyword">return</span> <span class="string">&quot;两个异步任务的组合&quot;</span>;</span><br><span class="line">                &#125;, executor);</span><br><span class="line">        System.out.println(future.join());</span><br><span class="line">        executor.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">第一个异步任务</span></span><br><span class="line"><span class="comment">第二个异步任务</span></span><br><span class="line"><span class="comment">两个异步任务的组合</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>OR组合</p>
+<p>applyToEither / acceptEither / runAfterEither 都表示：将两个CompletableFuture组合起来，<strong>只要其中一个执行完了</strong>,就会执行某个任务。</p>
+<p>区别在于：</p>
+<ul>
+<li>applyToEither：会将已经执行完成的任务，作为方法入参，传递到指定方法中，且<strong>有返回值</strong></li>
+<li>acceptEither: 会将已经执行完成的任务，作为方法入参，传递到指定方法中，且<strong>无返回值</strong></li>
+<li>runAfterEither： 不会把执行结果当做方法入参，且没有返回值。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">		<span class="comment">//第一个异步任务，休眠2秒，保证它执行晚点</span></span><br><span class="line">		CompletableFuture&lt;String&gt; first = CompletableFuture.supplyAsync(() -&gt; &#123;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">				Thread.sleep(<span class="number">2000L</span>);</span><br><span class="line">				System.out.println(<span class="string">&quot;执行完第一个异步任务&quot;</span>);</span><br><span class="line">			&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">				<span class="keyword">return</span> <span class="string">&quot;第一个任务异常&quot;</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">return</span> <span class="string">&quot;第一个异步任务&quot;</span>;</span><br><span class="line">		&#125;);</span><br><span class="line">		<span class="type">ExecutorService</span> <span class="variable">executor</span> <span class="operator">=</span> Executors.newSingleThreadExecutor();</span><br><span class="line">		CompletableFuture&lt;Void&gt; future = CompletableFuture</span><br><span class="line">				<span class="comment">//第二个异步任务</span></span><br><span class="line">				.supplyAsync(() -&gt; &#123;</span><br><span class="line">							System.out.println(<span class="string">&quot;执行完第二个任务&quot;</span>);</span><br><span class="line">							<span class="keyword">return</span> <span class="string">&quot;第二个任务&quot;</span>;</span><br><span class="line">						&#125;</span><br><span class="line">						, executor)</span><br><span class="line">				<span class="comment">//第三个任务</span></span><br><span class="line">				.acceptEitherAsync(first, System.out::println, executor);</span><br><span class="line"></span><br><span class="line">		executor.shutdown();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">执行完第二个任务</span></span><br><span class="line"><span class="comment">第二个任务</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>AllOf</p>
+<p>所有任务都执行完成后，才执行 allOf返回的CompletableFuture。如果任意一个任务异常，allOf的CompletableFuture，执行get方法，会抛出异常</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ExecutionException,InterruptedException &#123;</span><br><span class="line"></span><br><span class="line">	CompletableFuture&lt;Void&gt; a = CompletableFuture.runAsync(() -&gt; &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;我执行完了&quot;</span>);</span><br><span class="line">	&#125;);</span><br><span class="line">	CompletableFuture&lt;Void&gt; b = CompletableFuture.runAsync(() -&gt; &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;我也执行完了&quot;</span>);</span><br><span class="line">	&#125;);</span><br><span class="line">	CompletableFuture&lt;Void&gt; allOfFuture = CompletableFuture.allOf(a, b).whenComplete((m,k) -&gt; &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;finish&quot;</span>);</span><br><span class="line">	&#125;);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">我执行完了</span></span><br><span class="line"><span class="comment">我也执行完了</span></span><br><span class="line"><span class="comment">finish</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>AnyOf</p>
+<p>任意一个任务执行完，就执行anyOf返回的CompletableFuture。如果执行的任务异常，anyOf的CompletableFuture，执行get方法，会抛出异常</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ExecutionException, InterruptedException &#123;</span><br><span class="line">	CompletableFuture&lt;Void&gt; a = CompletableFuture.runAsync(()-&gt;&#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="comment">//延时</span></span><br><span class="line">			Thread.sleep(<span class="number">3000L</span>);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;我执行完了&quot;</span>);</span><br><span class="line">	&#125;);</span><br><span class="line">	CompletableFuture&lt;Void&gt; b = CompletableFuture.runAsync(() -&gt; &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;我也执行完了&quot;</span>);</span><br><span class="line">	&#125;);</span><br><span class="line">	CompletableFuture&lt;Object&gt; anyOfFuture = CompletableFuture.anyOf(a, b).whenComplete((m,k)-&gt;&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;finish&quot;</span>);</span><br><span class="line">	&#125;);</span><br><span class="line">	anyOfFuture.join();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>thenCompose</p>
+<p>thenCompose方法会在某个任务执行完成后，将该任务的执行结果,作为方法入参,去执行指定的方法。该方法会返回一个新的CompletableFuture实例</p>
+<ul>
+<li>如果该CompletableFuture实例的result不为null，则返回一个基于该result新的CompletableFuture实例；</li>
+<li>如果该CompletableFuture实例为null，然后就执行这个新任务</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ExecutionException, InterruptedException &#123;</span><br><span class="line">        CompletableFuture&lt;String&gt; f = CompletableFuture.completedFuture(<span class="string">&quot;第一个任务&quot;</span>);</span><br><span class="line">        <span class="comment">//第二个异步任务</span></span><br><span class="line">        <span class="type">ExecutorService</span> <span class="variable">executor</span> <span class="operator">=</span> Executors.newSingleThreadExecutor();</span><br><span class="line">        CompletableFuture&lt;String&gt; future = CompletableFuture</span><br><span class="line">                .supplyAsync(() -&gt; <span class="string">&quot;第二个任务&quot;</span>, executor)</span><br><span class="line">                .thenComposeAsync(data -&gt; &#123;</span><br><span class="line">                    System.out.println(data); <span class="keyword">return</span> f; <span class="comment">//使用第一个任务作为返回</span></span><br><span class="line">                &#125;, executor);</span><br><span class="line">        System.out.println(future.join());</span><br><span class="line">        executor.shutdown();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">第二个任务</span></span><br><span class="line"><span class="comment">第一个任务</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6970558076642394142">异步编程利器：CompletableFuture详解 ｜Java 开发实战</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/zsx_xiaoxin/article/details/123898171">CompletableFuture使用详解（全网看这一篇就行）_supplyasync_代码搬运工阿新的博客-CSDN博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://tech.meituan.com/2022/05/12/principles-and-practices-of-completablefuture.html">【美团】CompletableFuture原理与实践-外卖商家端API的异步化</a></p>
+<p>问题：</p>
+<ol>
+<li>
+<p>completablefuture和@Async的区别</p>
+<blockquote>
+<p><code>CompletableFuture</code> 和 <code>@Async</code> 是 Java 编程中用于实现异步操作的两种不同的方式。它们的主要区别在于实现方式和使用场景。</p>
+<ol>
+<li>
+<p><strong>CompletableFuture</strong>: <code>CompletableFuture</code> 是 Java 8 中引入的类，用于实现异步编程和处理异步操作的结果。它提供了一种函数式的方式来处理异步操作的结果，允许您以链式的方式组合多个异步操作。您可以将多个 <code>CompletableFuture</code> 对象组合成一个更大的异步操作流，通过调用方法如 <code>thenApply</code>, <code>thenCompose</code>, <code>thenCombine</code> 等来定义操作的顺序和依赖关系。</p>
+<p>优点：</p>
+<ul>
+<li>提供了丰富的方法来处理异步操作的结果。</li>
+<li>可以轻松地构建复杂的异步操作流。</li>
+<li>提供了异常处理机制，可以在异步操作中捕获和处理异常。</li>
+</ul>
+<p>使用场景：</p>
+<ul>
+<li>处理复杂的异步操作流程。</li>
+<li>需要更多的灵活性和控制异步操作的结果处理方式。</li>
+</ul>
+</li>
+<li>
+<p><strong>@Async</strong>: <code>@Async</code> 是 Spring 框架提供的注解，用于在 Spring 管理的应用中实现异步方法调用。通过在方法上添加 <code>@Async</code> 注解，Spring 将会为这个方法创建一个新的线程来执行，并且不会阻塞主线程。您需要在配置中启用异步执行的功能，并确保 Spring 上下文正确地处理异步方法。</p>
+<p>优点：</p>
+<ul>
+<li>简化了异步操作的实现，只需通过注解就可以完成异步调用。</li>
+<li>适用于 Spring 环境中的异步操作。</li>
+</ul>
+<p>使用场景：</p>
+<ul>
+<li>在 Spring 应用中实现简单的异步操作，如发送电子邮件、生成报告等。</li>
+</ul>
+</li>
+</ol>
+<p>综上所述，<code>CompletableFuture</code> 更适合在 Java 编程中处理复杂的异步操作流程，而 <code>@Async</code> 更适用于在 Spring 框架中实现简单的异步方法调用。您可以根据具体的需求选择适合的方法来实现异步操作。在某些情况下，您甚至可以将它们结合使用，例如在 Spring 应用中使用 <code>CompletableFuture</code> 来构建更复杂的异步操作流程。</p>
+</blockquote>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1246,390 +1960,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/26/Windows%E4%B8%8B%E7%9A%84Java%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86--jabba/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="AlwaysXR">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ALWAYSXR BLOG">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | ALWAYSXR BLOG">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2023/07/26/Windows%E4%B8%8B%E7%9A%84Java%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86--jabba/" class="post-title-link" itemprop="url">Windows下的Java版本管理--jabba</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2023-07-26 20:49:24 / 修改时间：20:54:14" itemprop="dateCreated datePublished" datetime="2023-07-26T20:49:24+08:00">2023-07-26</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1>Windows下的Java版本管理–jabba</h1>
-<p>jabba相关信息：</p>
-<p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/shyiko/jabba">https://github.com/shyiko/jabba</a></p>
-<p>参考文档：<a target="_blank" rel="noopener" href="https://www.cjavapy.com/article/96/">https://www.cjavapy.com/article/96/</a></p>
-<h4 id="安装">安装</h4>
-<p>在管理员身份下的powershell执行</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[Net.ServicePointManager]::SecurityProtocol =[Net.SecurityProtocolType]::Tls12</span><br><span class="line">Invoke-Expression (</span><br><span class="line">  Invoke-WebRequest https://github.com/shyiko/jabba/raw/master/install.ps1 -UseBasicParsing</span><br><span class="line">).Content</span><br></pre></td></tr></table></figure>
-<p>如果执行上面命令报错</p>
-<ol>
-<li>可能是win10脚本执行策略问题，修改可以执行下边命令：</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Set-ExecutionPolicy -Scope CurrentUser</span><br></pre></td></tr></table></figure>
-<p>执行后会出ExecutionPolicy:提示信息，输入RemoteSigned，回车确定后在按Y确定执行。</p>
-<p>再执行安装命令即可正常使用</p>
-<ol>
-<li>网络问题：</li>
-</ol>
-<p>需要科学上网</p>
-<p><img src="https://z4a.net/images/2023/03/14/6469bc10396aaa456abe082a57d9bf55.png" alt="img"></p>
-<p>安装成功↑</p>
-<h4 id="管理jdk版本">管理jdk版本</h4>
-<ol>
-<li>添加本地jdk</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jabba link system@1.8 E:\Users\19318\.jdks\corretto-1.8.0_322-1</span><br></pre></td></tr></table></figure>
-<p><img src="https://z4a.net/images/2023/03/14/b8aeccb86baff856913af5345d84af2b.png" alt="img"></p>
-<p>2.查询本地安装的JDK版本</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jabba ls</span><br></pre></td></tr></table></figure>
-<p>3.切换jdk版本</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jabba use system@1.8</span><br></pre></td></tr></table></figure>
-<p><img src="https://z4a.net/images/2023/03/14/d65994093e63d5b9198474374da20763.png" alt="img"></p>
-<p>附：常用命令</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">jabba ls-remote 查询服务器上可下载的安装的JDK版本</span><br><span class="line">jabba ls 查询本地安装的JDK版本</span><br><span class="line">jabba install openjdk@1.10-0 安装OpenJDK</span><br><span class="line">jabba uninstall zulu@1.6.77 卸载JDK</span><br><span class="line">jabba use adopt@1.8 切换使用的JDK版本</span><br></pre></td></tr></table></figure>
-<h4 id="应用场景和局限性">应用场景和局限性</h4>
-<p>我的需求是将默认版本由17变为8，在尝试了网上的其他办法没有成功后尝试的jabba，但是jabba仅可在管理员身份下的powershell中可以被找到并使用，在普通powershell、普通cmd和管理员cmd中均无法找到或使用jabba，并且默认的jdk版本仍是原来的17，具体原因未知。</p>
-<p>参考文章：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/fortuneju/p/14661923.html">Java使用Jabba进行版本管理</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/26/Vue%E7%9A%84%E5%AE%89%E8%A3%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="AlwaysXR">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ALWAYSXR BLOG">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | ALWAYSXR BLOG">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2023/07/26/Vue%E7%9A%84%E5%AE%89%E8%A3%85/" class="post-title-link" itemprop="url">VUE的安装</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2023-07-26 20:49:24 / 修改时间：20:54:03" itemprop="dateCreated datePublished" datetime="2023-07-26T20:49:24+08:00">2023-07-26</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>我的版本如下所示</p>
-<p><img src="https://z4a.net/images/2023/03/14/aee4a80c084263211052d9bbcd7d660f.png" alt="img"></p>
-<p>这是以前我的电脑就配置好的，具体怎么装俺也想不起来了，可以上网搜搜其他教程，注意配置环境变量和用户变量噢~</p>
-<h3 id="开始安装">开始安装</h3>
-<p>先贴出来我滴参考文章吧！</p>
-<p>《<a target="_blank" rel="noopener" href="https://blog.csdn.net/thumbs_up_sign_ygj/article/details/104979272">用webstorm搭建vue项目（亲测，绝对实用）</a>》</p>
-<p>大哥写的不错，也包含了安装nodejs和npm的过程，大家可以借鉴一下。下面是我的安装过程</p>
-<ul>
-<li>安装淘宝镜像-cnpm</li>
-</ul>
-<p>这类似与npm的国内镜像源，用它下载会变快一点点~</p>
-<p>安装命令：npm install -g cnpm --registry=<a target="_blank" rel="noopener" href="https://registry.npm.taobao.org">https://registry.npm.taobao.org</a></p>
-<p>验证命令：cnpm -v</p>
-<p>返回如下内容则安装成功</p>
-<p><img src="https://z4a.net/images/2023/03/14/e7c53873a0e02012d761a852d05cd32f.png" alt="img"></p>
-<p>如果你一下就成功了，那我恭喜你。我本人输入验证命令时遇到了报错</p>
-<p>‘cnpm‘ 不是内部或外部命令，也不是可运行的程序 或批处理文件。</p>
-<p>上网找了很久，总结出来报错原因应该是：没有将cnpm的执行路径添加到windows环境变量中</p>
-<p>好，那现在问题就变成了cnpm在哪里执行捏？</p>
-<p>首先，cnpm一般会下载在你安装的nodejs的文件夹下。按照网上的说法，有一些人的cnpm.cmd会在这个↓文件夹下，不知道大家的在不在，反正我是没有</p>
-<p>（注意是cnpm.cmd不是普通的cnpm噢）</p>
-<p><img src="https://z4a.net/images/2023/03/14/35d81428dc25d5929904e26cae7023b6.png" alt="img"></p>
-<p>找了半天我也不知道网上博主们的cnpm.cmd是哪来的，正发愁的时候突然发现他就在前几层的文件夹（node_global）下诶</p>
-<p><img src="https://z4a.net/images/2023/03/14/f21d3db0ca340eae6a971a0d1fc96d76.png" alt="img"></p>
-<p>那现在问题就很简单啦，由于原因是：没有将cnpm的执行路径添加到windows环境变量中，现在我们只需要在用户变量的Path中添加cnpm.cmd所在的路径即可！</p>
-<p><img src="https://z4a.net/images/2023/03/14/64a6f743dd4b6e3d561a5eb8fc398b30.png" alt="img"></p>
-<p>现在，我们再去用验证命令来验证，就会得到正确的结果啦</p>
-<ul>
-<li>安装webpack</li>
-</ul>
-<p>安装命令：cnpm install webpack -g</p>
-<p>验证命令：webpack -v</p>
-<p>如果出现</p>
-<blockquote>
-<p>We will use “npm” to install the CLI via “npm install -D”. Do you want to install ‘webpack-cli’ (yes/no):</p>
-</blockquote>
-<p>直接回车（即默认no，选择yes会报错），然后执行</p>
-<p>npm install webpack-cli -g</p>
-<ul>
-<li>安装Vue</li>
-</ul>
-<p>安装命令：cnpm install vue -g</p>
-<ul>
-<li>安装Vue命令行工具，即vue-cli 脚手架</li>
-</ul>
-<p>安装命令：cnpm install vue-cli -g</p>
-<p>验证命令：vue -V (V要大写！)</p>
-<p><img src="https://z4a.net/images/2023/03/14/4011de0ebd511babbff9d217c6ed65e7.png" alt="img"></p>
-<p>这样我的vue就安装好啦，但是做到这里安装的vue-cli应该是2.9.6版本噢，我后续又进行了更新，下文会写！</p>
-<h3 id="Vue-Cli更新">Vue-Cli更新</h3>
-<p>参考的文章是</p>
-<p>《<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_48736958/article/details/111405591">如何升级Vue的版本 vue2.9.6升级到vue3.0</a>》</p>
-<ul>
-<li>首先卸载老版本vue2.9.6</li>
-</ul>
-<p>执行命令：npm uninstall vue-cli -g</p>
-<ul>
-<li>再安装新的vue</li>
-</ul>
-<p>执行命令：cnpm install -g @vue/cli</p>
-<p>完成！现在再输入vue -V就可以检测到新版本的vue了</p>
-<h3 id="WebStorm创建Vue项目">WebStorm创建Vue项目</h3>
-<p>在新建项目是选择Vue.js即可，系统会自动去寻找电脑中的Node解释器和Vue CLI</p>
-<p><img src="https://z4a.net/images/2023/03/14/069826b004091b7a84f1244f2378f1ec.png" alt="img"></p>
-<p>点击创建，就可以开始创建新项目了。这时我的电脑又报错了。。。</p>
-<blockquote>
-<p>npm ERR! code EPERM<br>
-npm ERR! syscall mkdir<br>
-…</p>
-</blockquote>
-<p>具体啥意思捏？咱也不知道。反正就先把报错信息甩给bing让他搜去吧。</p>
-<p>bing告诉我：《<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42780155/article/details/119025638">npm安装报错（npm ERR! code EPERM npm ERR! syscall mkdir…）</a>》</p>
-<p>文中提到两种方法，抱着能输命令就不找文件的原则，我先试了第二种</p>
-<p>npm cache clean --force</p>
-<p>失败了哈哈哈，提示我不能删除之类的（即使我已经以管理员身份运行）</p>
-<p>然后回过头看第一种，这次倒是根据文章很顺利的找到了.npmrc文件（C:\Users{账户}\下的.npmrc文件），直接delete，再次运行，问题解决（已经删完了没法给大家截图了，莫得办法）</p>
-<p>经过一段时间的等待，WebStorm终于创建好了Vue项目，项目结构如下</p>
-<p><img src="https://z4a.net/images/2023/03/14/f7d0a6dada1a17807ae32ed38c37f3d5.png" alt="img"></p>
-<p>这时候有人就要问了：“你怎么知道你安装的vue版本呢？” 检测vue版本可以在我们的webstorm的终端中输入npm list vue来查看（不在项目下输入可能会报错）</p>
-<p><img src="https://z4a.net/images/2023/03/14/b06fb53bb0ec8b473244f9b1cbef0bcb.png" alt="img"></p>
-<p>也可以在package.json文件中的&quot;dependencies&quot;下查看</p>
-<p><img src="https://z4a.net/images/2023/03/14/b0e7abc115cf309e5d33a36a0ccd0da3.png" alt="img"></p>
-<p>后面再更新Vue的教程~</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/26/Springboot%E9%9B%86%E6%88%90Redis%E5%81%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BC%93%E5%AD%98%EF%BC%88%E5%8E%9F%E7%94%9F%E7%89%88%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="AlwaysXR">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ALWAYSXR BLOG">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | ALWAYSXR BLOG">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2023/07/26/Springboot%E9%9B%86%E6%88%90Redis%E5%81%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BC%93%E5%AD%98%EF%BC%88%E5%8E%9F%E7%94%9F%E7%89%88%EF%BC%89/" class="post-title-link" itemprop="url">Springboot集成Redis做数据库缓存（原生版）</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2023-07-26 20:49:24 / 修改时间：20:53:38" itemprop="dateCreated datePublished" datetime="2023-07-26T20:49:24+08:00">2023-07-26</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1>Springboot集成Redis做数据库缓存（原生版）</h1>
-<p>redis做缓存简单来说就是：系统把表中经常访问的记录放在了Redis中，然后用户查询时先去查询Redis再去查询MySQL，由于缓存在内存中，所以查询会很快，起到提高性能的作用。</p>
-<p>先来看效果吧~</p>
-<p>测试案例是把一个查询重复99999次，根据时间来判断性能的好坏。</p>
-<p>使用redis时：</p>
-<p><img src="https://z4a.net/images/2023/03/14/defac8a67b0d3fa9b16422502e00af87.png" alt="img"></p>
-<p>不使用redis时：</p>
-<p><img src="https://z4a.net/images/2023/03/14/9b779c3fa0fbbdf4d57cfaf678d6233d.png" alt="img"></p>
-<p>可以看出使用redis大概快了两秒钟，确实实现了优化。但是redis可以实现的优化效果作者并不是很了解，这里感觉效果不算特别明显，可能和代码有关系。</p>
-<p>本文所用的方法是原生的redis操作，没有用到springboot自带的缓存机制（不会，下次再更）。本文代码基于<a target="_blank" rel="noopener" href="http://www.alwaysxr777.top:8081/blog/21">之前的文章</a>进行添加，需要源码的同学可以去原文下载。</p>
-<h3 id="maven配置">maven配置</h3>
-<p>添加以下依赖：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-cache<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="application配置">application配置</h3>
-<p>redis默认是没有密码的，所以如果你没有设置密码就不需要写密码啦</p>
-<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring</span>:<span class="string">redis:host: localhost</span></span><br><span class="line">    <span class="attr">port</span>:<span class="string">6379</span></span><br></pre></td></tr></table></figure>
-<h3 id="Java代码">Java代码</h3>
-<p><img src="https://z4a.net/images/2023/03/14/3ee69ecf2e34a778f4157fcd83c4018f.png" alt="img"></p>
-<ul>
-<li>首先在项目文件夹下新建config文件夹（放配置类）和util文件夹（放工具类）</li>
-<li>在config文件夹下新建RedisConfig类</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableCaching</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisConfig</span> <span class="keyword">extends</span> <span class="title class_">CachingConfigurerSupport</span>&#123;</span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> RedisTemplate redisTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> RedisTemplate <span class="title function_">redisTemplateInit</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="comment">//序列化key的实例化对象</span></span><br><span class="line">        redisTemplate.setKeySerializer(<span class="keyword">new</span> <span class="title class_">StringRedisSerializer</span>());</span><br><span class="line">        <span class="comment">//序列化value的实例化对象</span></span><br><span class="line">        redisTemplate.setValueSerializer(<span class="keyword">new</span> <span class="title class_">GenericJackson2JsonRedisSerializer</span>());</span><br><span class="line">        <span class="keyword">return</span> redisTemplate;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>RedisTemplate是<strong>Spring Data Redis提供给用户的最高级的抽象客户端</strong>，用户可直接通过RedisTemplate进行多种操作,例如set、get</p>
-<ul>
-<li>（非必须）可以在config文件夹下新建一个RedisConstant类来存储redis的key</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisConstant</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String USER_KEY=<span class="string">&quot;User&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>到时候使用时直接调用参数即可</p>
-<ul>
-<li>在util文件夹下新建RedisUtil类，里面的内容是封装好的redis操作，网上有很多大佬写的工具类，通用性比较高，找到合适的可以直接拿来用</li>
-</ul>
-<p>我找到的工具类有很多功能，代码比较长，放在文章的最后</p>
-<ul>
-<li>在serverimpl中添加redis的相关代码</li>
-</ul>
-<p>主要逻辑是查询前先在redis中寻找有没有要查找的内容，如果没有再去数据库中查找，数据库返回的值顺便存入redis，这样下次再访问时就可以从redis中读到数据了。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserServiceImpl</span> <span class="keyword">implements</span> <span class="title class_">UserService</span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    UserMapper userMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    RedisUtil redisUtil;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    publicList&lt;User&gt; <span class="title function_">queryAll</span><span class="params">()</span>&#123;<span class="comment">//试图从redis获取</span></span><br><span class="line">        List&lt;User&gt; users =(List&lt;User&gt;) redisUtil.get(RedisConstant.USER_KEY);<span class="comment">//获取失败则去数据库查找</span></span><br><span class="line">        <span class="keyword">if</span>(CollectionUtils.isEmpty(users))&#123;</span><br><span class="line">            users=userMapper.queryAll();<span class="comment">//返回的数据存入redis</span></span><br><span class="line">            redisUtil.set(RedisConstant.USER_KEY,users);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> users;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">changePassword</span><span class="params">(String username,String password)</span>&#123;<span class="comment">//为了防止数据不一致，在数据库数据改变时先清楚之前redis的相关缓存</span></span><br><span class="line">        redisUtil.del(RedisConstant.USER_KEY);</span><br><span class="line">        userMapper.changePassword(username,password);</span><br><span class="line">        System.out.println(<span class="string">&quot;修改成功&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>代码部分就到此结束了~</p>
-<h3 id="运行代码">运行代码</h3>
-<p>首先你的电脑要先启动redis服务器端才可以。</p>
-<p>redis官方是没有Windows版的，不过已经有大佬开发出了Windows版，安装起来比较简单，没什么需要注意的。大家跟着<a target="_blank" rel="noopener" href="https://www.runoob.com/redis/redis-install.html">菜鸟教程</a>先在自己电脑上安装redis吧！</p>
-<p>安装好了，有的同学就要问了，redis现在只能在它自己的目录下运行，这可怎么办捏？</p>
-<p>很简单，我们把redis的路径添加到环境变量中，就可以在任意位置启动redis了</p>
-<p><img src="https://z4a.net/images/2023/03/14/4f4763156c35499d7f339ab7ee356a7c.png" alt="img"></p>
-<p>耗，现在我们打开cmd，输入redis-server，就可以启动redis服务端了（默认的端口6379）</p>
-<p><img src="https://z4a.net/images/2023/03/14/0fff79d0f661c8e77aacce09b1110bb1.png" alt="img"></p>
-<p><strong>不要关闭服务端界面</strong>，再打开一个cmd，输入redis-cli，就可以启动客户端了（默认的端口6379）</p>
-<p><img src="https://z4a.net/images/2023/03/14/c519f3754700ed0cda462ce1ce11a980.png" alt="img"></p>
-<p>现在，来运行我们写好的程序吧</p>
-<p>进入localhost:8084，点击获取，我们会从数据库查到数据，同时把数据存入redis，这时我们在redis客户端就可以查到数据了~</p>
-<p><img src="https://z4a.net/images/2023/03/14/b3c1f4887e4e5548716e4950442dad5f.png" alt="img"></p>
-<p>如果你想不起来你的键叫什么，又不想去看代码，那么查询现在redis中存有的键：keys *</p>
-<p><img src="https://z4a.net/images/2023/03/14/bdc34c4083bc81135b89151994b6d645.png" alt="img"></p>
-<p>现在你可以自己写一个测试用例来看看效果如何了。</p>
-<p>虽然在大项目中redis肯定不是这么用的，但是对于作者来说，起码算是用起来了，后面再学习正确的简洁的使用方式，学会了来给大噶更新！</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
